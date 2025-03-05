@@ -1,0 +1,141 @@
+.studyPageContainer {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .pageTitle {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  .studySections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .studySection {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .sectionHeader {
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .sectionHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .sectionHeader p {
+    margin: 0.5rem 0 0;
+    color: #666;
+  }
+  
+  .sectionLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .sectionCard {
+    display: flex;
+    padding: 1.5rem;
+    align-items: center;
+    transition: background-color 0.2s ease;
+  }
+  
+  .sectionCard:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .sectionIcon {
+    width: 64px;
+    height: 64px;
+    margin-right: 1.5rem;
+  }
+  
+  .sectionContent {
+    flex: 1;
+  }
+  
+  .sectionContent h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: #333;
+  }
+  
+  .sectionContent p {
+    margin: 0 0 1rem;
+    color: #666;
+  }
+  
+  .sectionButton {
+    padding: 0.5rem 1rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .sectionButton:hover {
+    background-color: #1d4ed8;
+  }
+  
+  .toolsContainer {
+    padding: 1.5rem;
+  }
+  
+  .toolDisplay {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    min-height: 300px;
+  }
+  
+  .toolPlaceholder {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #666;
+  }
+  
+  .toolPlaceholder h3 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    color: #333;
+  }
+  
+  .toolPlaceholder p {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 768px) {
+    .studyPageContainer {
+      padding: 1rem;
+    }
+    
+    .sectionCard {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .sectionIcon {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+  }

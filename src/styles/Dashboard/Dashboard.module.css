@@ -1,0 +1,236 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1a202c;
+}
+
+.notificationIcon {
+  position: relative;
+}
+
+.bellIcon {
+  color: #718096;
+  cursor: pointer;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background-color: #e53e3e;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.headerSubtitle {
+  color: #718096;
+  margin-top: 0.5rem;
+}
+
+.statsSection {
+  margin-bottom: 2rem;
+  background:white;
+  padding: 2rem;
+  border-radius:0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 1rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  color: black;
+}
+.purple1 {
+  background-color: #805ad5; /* Equivalent to bg-purple-600 */
+}
+
+.green1 {
+  background-color: #38a169; /* Equivalent to bg-green-600 */
+}
+
+.blue1 {
+  background-color: #3182ce; /* Equivalent to bg-blue-600 */
+}
+
+.statCardContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statCardTitle {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.statCardValue {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.statCardIcon {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 9999px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.recentActivities {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.activitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #f7fafc;
+}
+
+.activityIcon {
+  margin-right: 1rem;
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.activityDate {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.noActivities {
+  text-align: center;
+  color: #718096;
+}
+
+.quickAccess {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.quickAccessGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.quickAccessCard {
+  display: block;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.quickAccessCard:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quickAccessCardContent {
+  display: flex;
+  align-items: center;
+}
+
+.quickAccessCardIcon {
+  padding: 0.75rem;
+  border-radius: 9999px;
+  background-color: #f7fafc;
+  margin-right: 1rem;
+}
+
+.quickAccessCardText {
+  flex: 1;
+}
+
+.quickAccessCardTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.quickAccessCardDescription {
+  font-size: 0.875rem;
+  color: #718096;
+}
+
+.quickAccessCardArrow {
+  color: #a0aec0;
+}
+
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid #e2e8f0;
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

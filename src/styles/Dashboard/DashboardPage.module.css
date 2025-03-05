@@ -1,0 +1,33 @@
+/* C:\Users\DELL\OneDrive\Desktop\edu-matrix\src\styles\Dashboard\DashboardPage.module.css */
+
+/* Dashboard Page Container */
+.dashboardPage {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f5f7f9;
+  }
+  
+  .mainContent {
+    flex: 1;
+    margin-left: 280px;
+    padding-top: 1rem;
+    overflow-x: hidden;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 992px) {
+    .mainContent {
+      margin-left: 70px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .dashboardPage {
+      flex-direction: column;
+    }
+    
+    .mainContent {
+      margin-left: 0;
+    }
+  }
