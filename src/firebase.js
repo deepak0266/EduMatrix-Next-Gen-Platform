@@ -4,14 +4,14 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA63p-VjVv977OrhE7_BwwHjwsxtmBJGa4",
-  authDomain: "edumatrix-65d7e.firebaseapp.com",
-  projectId: "edumatrix-65d7e",
-  storageBucket: "edumatrix-65d7e.firebasestorage.app",
-  messagingSenderId: "712607432245",
-  appId: "1:712607432245:web:92d1f5666f010d3dc33b7c",
-  measurementId: "G-M8SYL9JT94"
-  };
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 const db= getFirestore(app);
