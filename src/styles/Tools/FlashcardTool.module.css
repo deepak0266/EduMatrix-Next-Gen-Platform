@@ -1,0 +1,47 @@
+/* src/styles/Tools/FlashcardTool.module.css */
+.flashcardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .flashcard {
+    width: 300px;
+    height: 200px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  
+  .flashcardFront,
+  .flashcardBack {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .flashcardFront {
+    background: #f0f4f8;
+  }
+  
+  .flashcardBack {
+    background: #3182ce;
+    color: white;
+    transform: rotateY(180deg);
+  }
+  
+  .flipped {
+    transform: rotateY(180deg);
+  }
+  
+  .controls {
+    display: flex;
+    gap: 1rem;
+  }

@@ -1,74 +1,200 @@
 .toolsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.mounted {
+  opacity: 1;
+}
+
+.toolCard {
+  position: relative;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.75rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  height: 220px;
+  justify-content: center;
+  transform: translateY(20px);
+  opacity: 0;
+  backdrop-filter: blur(8px);
+}
+
+.fadeIn {
+  animation: fadeInUp 0.5s forwards;
+  animation-delay: var(--animation-delay);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toolCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.toolCard.hovered .toolIconContainer {
+  transform: scale(1.1);
+}
+
+.toolIconContainer {
+  position: relative;
+  border-radius: 50%;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  z-index: 2;
+  background-color: #f0f9ff;
+}
+
+.toolIcon {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.75px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.toolCard:hover .toolIcon {
+  transform: scale(1.1);
+}
+
+.toolName {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.toolDescription {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+  line-height: 1.5;
+  max-width: 90%;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.toolCard:hover .toolDescription {
+  opacity: 1;
+}
+
+.toolCard:hover .toolName {
+  color: var(--tool-color);
+}
+
+.selected {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--tool-color);
+}
+
+.selected .toolIconContainer {
+  transform: scale(1.1);
+}
+
+.selected .toolName {
+  color: var(--tool-color);
+}
+
+.glowEffect {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;
+  height: 10px;
+  background: var(--tool-color);
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  border-radius: 50%;
+}
+
+.toolCard:hover .glowEffect {
+  opacity: 0.4;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (hover: hover) {
+  .toolCard:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .toolCard:hover:after {
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 768px) {
+  .toolsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
   }
   
   .toolCard {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .toolCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.25rem 1rem;
+    height: 180px;
   }
   
   .toolIconContainer {
-    background-color: #f0f9ff;
-    border-radius: 50%;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 56px;
+    height: 56px;
     margin-bottom: 1rem;
   }
   
   .toolIcon {
-    width: 32px;
-    height: 32px;
-    color: #2563eb;
+    width: 24px;
+    height: 24px;
   }
   
   .toolName {
-    margin: 0 0 0.5rem;
     font-size: 1rem;
-    font-weight: 500;
-    color: #333;
+    margin-bottom: 0.5rem;
   }
   
   .toolDescription {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #666;
-    line-height: 1.4;
+    font-size: 0.75rem;
   }
-  
-  @media (max-width: 768px) {
-    .toolsGrid {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-    
-    .toolCard {
-      padding: 1rem;
-    }
-    
-    .toolIconContainer {
-      width: 48px;
-      height: 48px;
-    }
-    
-    .toolIcon {
-      width: 24px;
-      height: 24px;
-    }
+}
+
+@media (max-width: 480px) {
+  .toolsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
+}

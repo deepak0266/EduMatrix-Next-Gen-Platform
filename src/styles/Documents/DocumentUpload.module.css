@@ -1,115 +1,325 @@
 /* src/styles/Documents/DocumentUpload.module.css */
 .uploadContainer {
-  margin-bottom: 2rem;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
 }
 
-.uploadForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.uploadCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
-.fileInputContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.uploadCard:hover {
+  transform: translateY(-2px);
 }
 
-.fileInputLabel {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background-color: #f9fafb;
-  border: 2px dashed #d1d5db;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  text-align: center;
+.cardHeader {
+  background: linear-gradient(to right, #3b82f6, #4f46e5);
+  padding: 20px 24px;
+  border-radius: 12px 12px 0 0;
+}
+
+.cardTitle {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cardContent {
+  padding: 24px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #4b5563;
-  transition: all 0.3s ease;
+  margin-bottom: 6px;
+  color: #374151;
 }
 
-.fileInputLabel:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.fileInput {
-  display: none;
-}
-
-.errorMessage {
+.required {
   color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
 }
 
-.filePreview {
-  min-height: 100px;
-  padding: 1rem;
-  background-color: #f9fafb;
-  border-radius: 0.5rem;
+.input {
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.selectedFile {
-  font-size: 0.9375rem;
-  color: #374151;
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-.selectedFile p {
-  margin: 0.25rem 0;
+.readOnly {
+  background-color: #f9fafb;
+  cursor: not-allowed;
 }
 
-.actionButtons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.actionButtons button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 500;
+.dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.actionButtons button[type="button"] {
-  background-color: #f3f4f6;
-  color: #374151;
+.dropzone:hover {
+  border-color: #3b82f6;
+  background-color: #f5f8ff;
 }
 
-.actionButtons button[type="button"]:hover {
-  background-color: #e5e7eb;
+.dragging {
+  border-color: #3b82f6;
+  background-color: #f0f7ff;
 }
 
-.actionButtons button[type="submit"] {
+.dropzoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.uploadIcon {
+  width: 40px;
+  height: 40px;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+.dropzoneText {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.browseLabel {
+  margin: 12px 0;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.browseButton {
+  display: inline-block;
   background-color: #3b82f6;
   color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
 
-.actionButtons button[type="submit"]:hover {
+.browseButton:hover {
   background-color: #2563eb;
 }
 
-.loadingSpinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
+.supportedFormats {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.filePreview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f0f7ff;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+}
+
+.fileIcon {
+  width: 24px;
+  height: 24px;
+  color: #3b82f6;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.fileName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeButton:hover {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #fef2f2;
+  border-radius: 6px;
+}
+
+.errorIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.success {
+  display: flex;
+  align-items: center;
+  color: #10b981;
+  font-size: 0.875rem;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #ecfdf5;
+  border-radius: 6px;
+}
+
+.successIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background-color: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  border-radius: 0 0 12px 12px;
+}
+
+.cancelButton {
+  background-color: #ffffff;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #f3f4f6;
+}
+
+.uploadButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.uploadButton:hover {
+  background-color: #2563eb;
+}
+
+.uploadButton.disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: white;
+  border-top-color: #ffffff;
+  margin-right: 8px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.uploadButtonContent {
+  display: flex;
+  align-items: center;
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .uploadContainer {
+    max-width: 100%;
+  }
+  
+  .cardContent {
+    padding: 16px;
+  }
+  
+  .filePreview {
+    padding: 8px 12px;
+  }
+  
+  .cardFooter {
+    padding: 12px 16px;
   }
 }

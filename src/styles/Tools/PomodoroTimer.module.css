@@ -1,0 +1,157 @@
+.pomodoroContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.timerDisplay {
+  background-color: #f8f9fa;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  border: 4px solid #96ceb4;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.time {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.mode {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #96ceb4;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background-color: #7aaf98;
+  transform: scale(1.05);
+}
+
+.controlButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(150, 206, 180, 0.5);
+}
+
+.modeButtons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.modeButton {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 120px;
+  font-size: 0.875rem;
+}
+
+.modeButton:hover {
+  background-color: #e9ecef;
+}
+
+.activeMode {
+  background-color: #96ceb4;
+  color: white;
+  border-color: #96ceb4;
+}
+
+.cycles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.cycles p {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.cycleIndicators {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cycleIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+}
+
+.completedCycle {
+  background-color: #96ceb4;
+}
+
+.infoBox {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.infoBox h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.infoBox p {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0.25rem 0;
+}

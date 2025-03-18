@@ -1,4 +1,3 @@
-/* C:\Users\DELL\OneDrive\Desktop\edu-matrix\src\pages\MusicPage.jsx*/
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, List, Search, Plus, Heart, Clock, MoreHorizontal, Shuffle, Repeat } from 'lucide-react';
 import styles from '../styles/Pages/MusicPage.module.css';
@@ -14,9 +13,12 @@ const MusicPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activePlaylist, setActivePlaylist] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [visualizerData, setVisualizerData] = useState(Array(20).fill(0));
 
   const audioRef = useRef(null);
   const progressBarRef = useRef(null);
+  const volumeControlRef = useRef(null);
 
   useEffect(() => {
     const fetchMusicData = () => {
@@ -47,6 +49,18 @@ const MusicPage = () => {
     };
 
     fetchMusicData();
+
+    // Close volume slider when clicking outside
+    const handleClickOutside = (event) => {
+      if (volumeControlRef.current && !volumeControlRef.current.contains(event.target)) {
+        setShowVolumeSlider(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -75,10 +89,28 @@ const MusicPage = () => {
     };
   }, []);
 
+  // Simulate audio visualizer effect
+  useEffect(() => {
+    if (!isPlaying) {
+      setVisualizerData(Array(20).fill(0));
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const newData = Array(20).fill(0).map(() => Math.random() * 100);
+      setVisualizerData(newData);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play().catch(error => {
+          console.error("Audio playback error:", error);
+          setIsPlaying(false);
+        });
       } else {
         audioRef.current.pause();
       }
@@ -116,15 +148,42 @@ const MusicPage = () => {
     setVolume(newVolume);
   };
 
+  const toggleVolumeSlider = () => {
+    setShowVolumeSlider(!showVolumeSlider);
+  };
+
+  const handleNextTrack = () => {
+    const currentIndex = tracks.findIndex(track => track.id === currentTrack.id);
+    const nextIndex = (currentIndex + 1) % tracks.length;
+    setCurrentTrack(tracks[nextIndex]);
+    setIsPlaying(true);
+  };
+
+  const handlePrevTrack = () => {
+    const currentIndex = tracks.findIndex(track => track.id === currentTrack.id);
+    const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+    setCurrentTrack(tracks[prevIndex]);
+    setIsPlaying(true);
+  };
+
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const handlePlaylistSelect = (playlist) => {
     setActivePlaylist(playlist);
+    // Animation for playlist selection
+    const element = document.getElementById(`playlist-${playlist.id}`);
+    if (element) {
+      element.classList.add(styles.selectPlaylistAnimation);
+      setTimeout(() => {
+        element.classList.remove(styles.selectPlaylistAnimation);
+      }, 500);
+    }
   };
 
   const formatTime = (seconds) => {
+    if (isNaN(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -141,9 +200,11 @@ const MusicPage = () => {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
+        <div className={styles.loadingText}>Loading your music experience...</div>
       </div>
     );
   }
+
   return (
     <div className={styles.container}>
       <audio ref={audioRef} src="" />
@@ -170,12 +231,13 @@ const MusicPage = () => {
             <h2 className={styles.playlistTitle}>Your Playlists</h2>
             <button className={styles.createPlaylistButton}>
               <Plus size={16} className={styles.icon} />
-              Create New Playlist
+              <span>Create New Playlist</span>
             </button>
 
             <div className={styles.playlistList}>
               {playlists.map(playlist => (
                 <div
+                  id={`playlist-${playlist.id}`}
                   key={playlist.id}
                   onClick={() => handlePlaylistSelect(playlist)}
                   className={`${styles.playlistItem} ${activePlaylist?.id === playlist.id ? styles.playlistItemActive : ''}`}
@@ -192,54 +254,78 @@ const MusicPage = () => {
         </aside>
 
         <main className={styles.mainContent}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>
-              {activePlaylist ? activePlaylist.name : 'All Tracks'}
-            </h2>
-            <p className={styles.sectionSubtitle}>
-              {filteredTracks.length} tracks available
-            </p>
-          </div>
+          <div className={styles.contentWrapper}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>
+                {activePlaylist ? activePlaylist.name : 'All Tracks'}
+              </h2>
+              <p className={styles.sectionSubtitle}>
+                {filteredTracks.length} tracks available
+              </p>
+            </div>
 
-          <div className={styles.tracksTable}>
-            <table className={styles.table}>
-              <thead>
-                <tr className={styles.tableHeader}>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Artist</th>
-                  <th>
-                    <Clock size={14} />
-                  </th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTracks.map((track, index) => (
-                  <tr
-                    key={track.id}
-                    className={`${styles.tableRow} ${currentTrack?.id === track.id ? styles.tableRowActive : ''}`}
-                    onClick={() => handleTrackSelect(track)}
-                  >
-                    <td className={styles.trackIndex}>{index + 1}</td>
-                    <td>
-                      <div className={styles.trackInfo}>
-                        <img className={styles.trackCover} src={track.coverUrl} alt="" />
-                        <div className={styles.trackTitle}>{track.title}</div>
-                      </div>
-                    </td>
-                    <td className={styles.trackArtist}>{track.artist}</td>
-                    <td className={styles.trackDuration}>{formatTime(track.duration)}</td>
-                    <td>
-                      <div className={styles.trackActions}>
-                        <Heart size={18} className={styles.trackActionIcon} />
-                        <MoreHorizontal size={18} className={styles.trackActionIcon} />
-                      </div>
-                    </td>
-                  </tr>
+            {currentTrack && isPlaying && (
+              <div className={styles.visualizer}>
+                {visualizerData.map((value, index) => (
+                  <div
+                    key={index}
+                    className={styles.visualizerBar}
+                    style={{ height: `${value}%` }}
+                  ></div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            )}
+
+            <div className={styles.tracksTable}>
+              <table className={styles.table}>
+                <thead>
+                  <tr className={styles.tableHeader}>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>
+                      <Clock size={14} />
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTracks.map((track, index) => (
+                    <tr
+                      key={track.id}
+                      className={`${styles.tableRow} ${currentTrack?.id === track.id ? styles.tableRowActive : ''}`}
+                      onClick={() => handleTrackSelect(track)}
+                    >
+                      <td className={styles.trackIndex}>
+                        {currentTrack?.id === track.id && isPlaying ? (
+                          <div className={styles.playingAnimation}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                          </div>
+                        ) : (
+                          index + 1
+                        )}
+                      </td>
+                      <td>
+                        <div className={styles.trackInfo}>
+                          <img className={styles.trackCover} src={track.coverUrl} alt="" />
+                          <div className={styles.trackTitle}>{track.title}</div>
+                        </div>
+                      </td>
+                      <td className={styles.trackArtist}>{track.artist}</td>
+                      <td className={styles.trackDuration}>{formatTime(track.duration)}</td>
+                      <td>
+                        <div className={styles.trackActions}>
+                          <Heart size={18} className={styles.trackActionIcon} />
+                          <MoreHorizontal size={18} className={styles.trackActionIcon} />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </main>
       </div>
@@ -249,11 +335,13 @@ const MusicPage = () => {
           <div className={styles.currentTrackInfo}>
             {currentTrack && (
               <>
-                <img
-                  src={currentTrack.coverUrl}
-                  alt={currentTrack.title}
-                  className={styles.currentTrackCover}
-                />
+                <div className={styles.albumArtContainer}>
+                  <img
+                    src={currentTrack.coverUrl}
+                    alt={currentTrack.title}
+                    className={`${styles.currentTrackCover} ${isPlaying ? styles.rotating : ''}`}
+                  />
+                </div>
                 <div className={styles.trackInfo}>
                   <h3 className={styles.currentTrackTitle}>{currentTrack.title}</h3>
                   <p className={styles.currentTrackArtist}>{currentTrack.artist}</p>
@@ -266,14 +354,14 @@ const MusicPage = () => {
           <div className={styles.playerControls}>
             <div className={styles.controlButtons}>
               <Shuffle size={18} className={styles.controlButton} />
-              <SkipBack size={20} className={styles.controlButton} />
+              <SkipBack size={20} className={`${styles.controlButton} ${styles.skipButton}`} onClick={handlePrevTrack} />
               <button
                 onClick={handlePlayPause}
                 className={styles.playPauseButton}
               >
-                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                {isPlaying ? <Pause size={20} /> : <Play size={20} className={styles.playIcon} />}
               </button>
-              <SkipForward size={20} className={styles.controlButton} />
+              <SkipForward size={20} className={`${styles.controlButton} ${styles.skipButton}`} onClick={handleNextTrack} />
               <Repeat size={18} className={styles.controlButton} />
             </div>
 
@@ -290,7 +378,9 @@ const MusicPage = () => {
                 <div
                   className={styles.progressBarFill}
                   style={{ width: `${(currentTime / duration) * 100}%` }}
-                ></div>
+                >
+                  <div className={styles.progressHandle}></div>
+                </div>
               </div>
               <span className={styles.timeLabel}>
                 {formatTime(duration)}
@@ -299,17 +389,25 @@ const MusicPage = () => {
           </div>
 
           {/* Volume control */}
-          <div className={styles.volumeControl}>
-            <Volume2 size={18} className={styles.controlButton} />
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-              className={styles.volumeSlider}
+          <div className={styles.volumeControl} ref={volumeControlRef}>
+            <Volume2 
+              size={18} 
+              className={styles.controlButton} 
+              onClick={toggleVolumeSlider}
             />
+            {showVolumeSlider && (
+              <div className={styles.volumePopup}>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  className={styles.volumeSlider}
+                />
+              </div>
+            )}
             <button className={styles.queueButton}>
               <List size={20} />
             </button>

@@ -1,0 +1,403 @@
+.quizGeneratorContainer {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.description {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.quizForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.textArea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.875rem;
+  background-color: #f8f9fa;
+  transition: border-color 0.2s;
+}
+
+.textArea:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+}
+
+.select {
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  font-size: 0.875rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.optionsRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.optionsRow .inputGroup {
+  flex: 1;
+}
+
+.generateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #4ecdc4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.generateButton:hover {
+  background-color: #3db5ad;
+  transform: translateY(-2px);
+}
+
+.generateButton:disabled {
+  background-color: #c5c5c5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.spinIcon {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Question styles */
+.questionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quizTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.questionProgress {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.questionCard {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #333;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.optionItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.optionItem:hover {
+  background-color: #f1f1f1;
+}
+
+.selectedOption {
+  background-color: #e0f7f5;
+  border-color: #4ecdc4;
+}
+
+.optionSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  color: #4ecdc4;
+  font-size: 1.25rem;
+}
+
+.optionText {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.navButton {
+  padding: 0.5rem 1rem;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.navButton:hover {
+  background-color: #e5e5e5;
+}
+
+.navButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Results styles */
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.resultsTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.scoreCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 4px solid #4ecdc4;
+}
+
+.scorePercentage {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.scoreFraction {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.scoreMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.excellentScore {
+  color: #27ae60;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.goodScore {
+  color: #2980b9;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.needsImprovement {
+  color: #e67e22;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.questionReview {
+  margin-top: 1rem;
+}
+
+.questionReview h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.reviewQuestion {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.reviewQuestionHeader {
+  display: flex;
+  margin-bottom: 0.75rem;
+}
+
+.questionNumber {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.questionText {
+  font-weight: 500;
+}
+
+.reviewAnswers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-left: 1.5rem;
+}
+
+.reviewOption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.correctAnswer {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.incorrectAnswer {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.correctMark, .incorrectMark {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionButton:first-child {
+  background-color: #f1f1f1;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.actionButton:last-child {
+  background-color: #4ecdc4;
+  color: white;
+  border: none;
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+}
+
+.actionButton:first-child:hover {
+  background-color: #e5e5e5;
+}
+
+.actionButton:last-child:hover {
+  background-color: #3db5ad;
+}

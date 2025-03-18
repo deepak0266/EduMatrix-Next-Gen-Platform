@@ -1,205 +1,198 @@
-/* General Container */
-.gameContainer {
-  background-color: #f8f9fa;
-  min-height: 100vh;
+/* Modern, Professional Games Page Styles */
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #5f6caf;
+  --background-light: #f4f7f6;
+  --text-dark: #2c3e50;
+  --text-muted: #7f8c8d;
+  --transition-speed: 0.3s;
+  --border-radius: 12px;
 }
 
-/* Header */
+.gameContainer {
+  background-color: var(--background-light);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-dark);
+}
+
+/* Modernized Header */
 .gameHeader {
-  background-color: white;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: white;
 }
 
 .gameHeaderContent {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 }
 
-/* Search Container */
+.gameHeaderContent h1 {
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 0;
+}
+
+/* Enhanced Search Container */
 .searchContainer {
-  margin-top: 1rem;
   position: relative;
+  flex-grow: 1;
+  max-width: 400px;
+  margin-left: 2rem;
 }
 
 .searchInput {
-  padding: 0.5rem 2.5rem 0.5rem 1rem;
   width: 100%;
-  border-radius: 9999px;
-  background-color: #f1f3f5;
-  border: 1px solid #dee2e6;
-  outline: none;
-  font-size: 1rem;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all var(--transition-speed) ease;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .searchInput:focus {
-  border-color: #ff922b;
-  box-shadow: 0 0 0 2px rgba(255, 146, 43, 0.5);
+  background-color: white;
+  border-color: var(--primary-color);
+  color: var(--text-dark);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  transition: color var(--transition-speed) ease;
+}
+
+.searchInput:focus + .searchIcon {
+  color: var(--primary-color);
 }
 
 /* Categories Section */
 .categoriesSection {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.categoryButton {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: var(--background-light);
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.categoryButton:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.categoryButton.activeCategory {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 6px rgba(74, 144, 226, 0.3);
 }
 
 /* Games Grid */
 .gamesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
   padding: 1rem;
 }
 
-/* Game Card */
 .gameCardContainer {
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: box-shadow 0.3s ease;
+  transition: all var(--transition-speed) ease;
+  transform-origin: center;
 }
 
 .gameCardContainer:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Initial Select Section */
-.gameInitialSelect {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+.gameCardContent {
+  padding: 1.5rem;
   text-align: center;
-  margin-top: 1.5rem;
+}
+
+.gameCardContent h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.gameCardContent p {
+  color: var(--text-muted);
+}
+
+/* Initial Select and Game Interface */
+.gameInitialSelect,
+.selectedGameSection {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  text-align: center;
+  margin-top: 2rem;
+  transition: all var(--transition-speed) ease;
 }
 
 .initialSelectIcon {
-  color: #868e96;
-  margin: 0 auto 1rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
 }
 
 .initialSelectTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #343a40;
+  color: var(--primary-color);
+  font-size: 1.75rem;
   margin-bottom: 1rem;
 }
 
 .initialSelectDescription {
-  color: #495057;
+  color: var(--text-muted);
   max-width: 500px;
   margin: 0 auto;
 }
 
-/* No Games Found */
-.noGamesFound {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  text-align: center;
-  margin-top: 1.5rem;
-}
-
-.noGamesTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #343a40;
-  margin-bottom: 0.5rem;
-}
-
-.noGamesText {
-  color: #495057;
-}
-
-/* Game Modal */
-.gameModalBackdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.gameModalContent {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow: auto;
-}
-
 /* Game Interface */
 .gameInterfaceContainer {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 0.5rem;
+  background-color: var(--background-light);
+  border-radius: var(--border-radius);
+  padding: 2rem;
 }
 
 .gameInterfaceInner {
   background-color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
-
-.gameTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #343a40;
-  margin-bottom: 1rem;
-}
-
-.gameDescription {
-  font-size: 1rem;
-  color: #495057;
-  margin-bottom: 1rem;
-}
-
-/* Buttons */
-.playButton {
-  padding: 0.5rem 1rem;
-  background-color: #ff922b;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0.25rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.playButton:hover {
-  background-color: #f76707;
-}
-
-.closeGameButton {
-  padding: 0.5rem 1rem;
-  background-color: #ff6b6b;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 0.25rem;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.closeGameButton:hover {
-  background-color: #fa5252;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* Loading Spinner */
@@ -208,13 +201,14 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: var(--background-light);
 }
 
 .loadingSpinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid #f1f3f5;
-  border-top: 4px solid #ff922b;
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid rgba(74, 144, 226, 0.2);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -224,48 +218,25 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Selected Game Section */
-.selectedGameSection {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .gameHeaderContent {
+    flex-direction: column;
+    text-align: center;
+  }
 
-/* Game Interface */
-.gameInterfaceContainer {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 0.5rem;
-}
+  .searchContainer {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+  }
 
-.gameInterfaceInner {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
-}
+  .categoriesSection {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 
-.gameTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #343a40;
-  margin-bottom: 1rem;
-}
-
-.gameDescription {
-  font-size: 1rem;
-  color: #495057;
-  margin-bottom: 1rem;
-}
-
-/* Game Card Hover Effect */
-.gameCardContainer {
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.gameCardContainer:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  .gamesGrid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,0 +1,35 @@
+/* src/styles/Tools/MathSolver.module.css */
+.mathContainer {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .selectInput {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .coeffInput {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .solveButton {
+    padding: 0.5rem 1rem;
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .solution {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f0f4f8;
+    border-radius: 4px;
+  }

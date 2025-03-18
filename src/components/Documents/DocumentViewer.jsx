@@ -1,4 +1,3 @@
-// src/components/Documents/DocumentViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { useDocuments } from '../../contexts/DocumentContext';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -6,23 +5,26 @@ import Button from '../Common/Button';
 import styles from '../../styles/Documents/DocumentViewer.module.css';
 import { trackViewTime } from '../../utils/timeTracker';
 
-const DocumentViewer = ({ documentId }) => {
+const DocumentViewer = ({ documentId, onClose }) => {
   const [viewStartTime, setViewStartTime] = useState(null);
   const { getDocument, currentDocument, loading, error, generateSummary } = useDocuments();
   
   useEffect(() => {
-    if (documentId) {
-      getDocument(documentId);
-      const startTime = new Date();
-      setViewStartTime(startTime);
-      
-      return () => {
-        if (viewStartTime) {
-          const endTime = new Date();
-          trackViewTime(documentId, viewStartTime, endTime);
+    let isMounted = true;
+    const loadDocument = async () => {
+      if (documentId) {
+        try {
+          await getDocument(documentId);
+          if (isMounted) setViewStartTime(new Date());
+        } catch (err) {
+          console.error('Document load error:', err);
         }
-      };
-    }
+      }
+    };
+    loadDocument();
+    return () => {
+      isMounted = false;
+    };
   }, [documentId]);
   
   const handleGenerateSummary = async () => {
@@ -48,41 +50,57 @@ const DocumentViewer = ({ documentId }) => {
   }
   
   const renderDocument = () => {
-    const { type, url, name } = currentDocument;
+    const { fileType, fileURL, fileName } = currentDocument;
     
-    switch (type) {
-      case 'pdf':
-        return (
-          <iframe 
-            src={url} 
-            className={styles.pdfViewer} 
-            title={name}
-          />
-        );
-      case 'txt':
-        return (
-          <div className={styles.textViewer}>
-            <pre>{currentDocument.content || 'Text content not available for preview'}</pre>
-          </div>
-        );
-      default:
-        return (
-          <div className={styles.unsupportedFormat}>
-            <p>
-              Preview not available for {type.toUpperCase()} files. 
-              <a href={url} download={name} className={styles.downloadLink}>
-                Download the file
-              </a>
+    // Determine the document type based on fileType
+    const isPdf = fileType === 'application/pdf' || fileType === 'pdf';
+    const isText = fileType === 'text/plain' || fileType === 'txt';
+    const isImage = fileType && fileType.startsWith('image/');
+    
+    if (isPdf) {
+      return (
+        <div className={styles.pdfContainer}>
+          <object 
+            data={`${fileURL}#toolbar=0&navpanes=0`}
+            type="application/pdf"
+            className={styles.pdfViewer}
+          >
+            <p>This browser doesn't support PDFs. 
+              <a href={fileURL} download>Download instead</a>
             </p>
-          </div>
-        );
+          </object>
+        </div>
+      );
+    } else if (isText) {
+      return (
+        <div className={styles.textViewer}>
+          <pre>{currentDocument.content || 'Text content not available for preview'}</pre>
+        </div>
+      );
+    } else if (isImage) {
+      return (
+        <div className={styles.imageViewer}>
+          <img src={fileURL} alt={fileName} className={styles.documentImage} />
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.unsupportedFormat}>
+          <p>
+            Preview not available for this file type.
+            <a href={fileURL} download={fileName} className={styles.downloadLink}>
+              Download the file
+            </a>
+          </p>
+        </div>
+      );
     }
   };
   
   return (
     <div className={styles.documentViewer}>
       <div className={styles.viewerHeader}>
-        <h2>{currentDocument.name}</h2>
+        <h2>{currentDocument.fileName}</h2>
         <div className={styles.viewerActions}>
           <Button 
             variant="secondary" 
@@ -92,12 +110,20 @@ const DocumentViewer = ({ documentId }) => {
             {loading ? <LoadingSpinner size="small" /> : 'Generate Summary'}
           </Button>
           <a 
-            href={currentDocument.url} 
-            download={currentDocument.name}
+            href={currentDocument.fileURL} 
+            download={currentDocument.fileName}
             className={styles.downloadButton}
           >
             Download
           </a>
+          {onClose && (
+            <Button 
+              variant="secondary" 
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          )}
         </div>
       </div>
       

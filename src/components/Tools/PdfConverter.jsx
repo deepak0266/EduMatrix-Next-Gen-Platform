@@ -1,201 +1,197 @@
-// import React, { useState } from 'react';
-// import { 
-//   Card, 
-//   CardContent, 
-//   CardDescription, 
-//   CardFooter, 
-//   CardHeader, 
-//   CardTitle 
-// } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label';
-// import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-// import { Progress } from '@/components/ui/progress';
-// import { Download, Upload, FileText, Check, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import styles from '../../styles/Tools/PdfConverter.module.css';
+import { FileText, Download, Upload, Trash, File } from 'lucide-react';
+import { jsPDF } from 'jspdf'; // Correct import
 
-// const PdfConverter = () => {
-//   const [file, setFile] = useState(null);
-//   const [convertedText, setConvertedText] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const [progress, setProgress] = useState(0);
-//   const [error, setError] = useState('');
-//   const [success, setSuccess] = useState(false);
-  
-//   const handleFileChange = (e) => {
-//     const selectedFile = e.target.files[0];
-//     if (selectedFile && selectedFile.type === 'application/pdf') {
-//       setFile(selectedFile);
-//       setError('');
-//     } else {
-//       setFile(null);
-//       setError('Please select a valid PDF file');
-//     }
-//   };
-  
-//   const handleConvert = async () => {
-//     if (!file) {
-//       setError('Please select a PDF file first');
-//       return;
-//     }
+const PdfConverter = () => {
+  const [files, setFiles] = useState([]);
+  const [convertedFiles, setConvertedFiles] = useState([]);
+  const [isConverting, setIsConverting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleFileUpload = (e) => {
+    const uploadedFiles = Array.from(e.target.files);
     
-//     setLoading(true);
-//     setProgress(0);
-//     setError('');
-//     setSuccess(false);
+    // Filter for supported file types
+    const supportedFiles = uploadedFiles.filter(file => {
+      const validTypes = ['text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      return validTypes.includes(file.type);
+    });
     
-//     try {
-//       // Simulating a progress bar for the conversion process
-//       const progressInterval = setInterval(() => {
-//         setProgress(prev => {
-//           const newProgress = prev + 10;
-//           if (newProgress >= 100) {
-//             clearInterval(progressInterval);
-//             return 100;
-//           }
-//           return newProgress;
-//         });
-//       }, 300);
-      
-//       // Here we would normally send the PDF file to a backend API
-//       // For now, we'll simulate the conversion with a timeout
-//       setTimeout(() => {
-//         clearInterval(progressInterval);
-//         setProgress(100);
-//         setLoading(false);
-//         setConvertedText(`Sample extracted text from ${file.name}.\n\nThis is where the actual text extracted from the PDF would appear. In a production implementation, this would be the result returned from the backend PDF parsing service.\n\nThe text could then be used for further processing, such as being input into the quiz generator or flashcard creator.`);
-//         setSuccess(true);
-//       }, 3000);
-      
-//     } catch (err) {
-//       setLoading(false);
-//       setError('Error converting PDF: ' + err.message);
-//     }
-//   };
-  
-//   const handleDownload = () => {
-//     if (!convertedText) return;
+    if (supportedFiles.length !== uploadedFiles.length) {
+      setErrorMessage('Some files were not added. Only TXT and DOC/DOCX files are supported.');
+      setTimeout(() => setErrorMessage(''), 5000);
+    }
     
-//     const blob = new Blob([convertedText], { type: 'text/plain' });
-//     const url = URL.createObjectURL(blob);
-//     const a = document.createElement('a');
-//     a.href = url;
-//     a.download = file ? file.name.replace('.pdf', '.txt') : 'converted-text.txt';
-//     document.body.appendChild(a);
-//     a.click();
-//     document.body.removeChild(a);
-//     URL.revokeObjectURL(url);
-//   };
-  
-//   const handleClear = () => {
-//     setFile(null);
-//     setConvertedText('');
-//     setProgress(0);
-//     setError('');
-//     setSuccess(false);
-//     // Reset the file input
-//     const fileInput = document.getElementById('pdf-file');
-//     if (fileInput) fileInput.value = '';
-//   };
-  
-//   return (
-//     <Card className="w-full max-w-3xl mx-auto">
-//       <CardHeader>
-//         <CardTitle className="flex items-center gap-2">
-//           <FileText className="h-6 w-6" />
-//           PDF Text Extractor
-//         </CardTitle>
-//         <CardDescription>
-//           Upload a PDF file to extract its text content for use in quizzes and flashcards
-//         </CardDescription>
-//       </CardHeader>
-      
-//       <CardContent className="space-y-4">
-//         <div className="space-y-2">
-//           <Label htmlFor="pdf-file">Select PDF File</Label>
-//           <Input 
-//             id="pdf-file" 
-//             type="file" 
-//             accept=".pdf" 
-//             onChange={handleFileChange} 
-//             disabled={loading}
-//           />
-//           {file && (
-//             <p className="text-sm text-gray-500">
-//               Selected: {file.name} ({Math.round(file.size / 1024)} KB)
-//             </p>
-//           )}
-//         </div>
+    setFiles(prevFiles => [...prevFiles, ...supportedFiles]);
+  };
+
+  const removeFile = (index) => {
+    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const convertFiles = async () => {
+    if (files.length === 0) {
+      setErrorMessage('Please add files to convert.');
+      setTimeout(() => setErrorMessage(''), 5000);
+      return;
+    }
+
+    setIsConverting(true);
+    const converted = [];
+
+    for (const file of files) {
+      try {
+        const doc = new jsPDF();
         
-//         {error && (
-//           <Alert variant="destructive">
-//             <AlertTriangle className="h-4 w-4" />
-//             <AlertTitle>Error</AlertTitle>
-//             <AlertDescription>{error}</AlertDescription>
-//           </Alert>
-//         )}
-        
-//         {success && (
-//           <Alert className="bg-green-50 border-green-200">
-//             <Check className="h-4 w-4 text-green-600" />
-//             <AlertTitle className="text-green-800">Success</AlertTitle>
-//             <AlertDescription className="text-green-700">
-//               PDF successfully converted to text
-//             </AlertDescription>
-//           </Alert>
-//         )}
-        
-//         {loading && (
-//           <div className="space-y-2">
-//             <Label>Converting PDF...</Label>
-//             <Progress value={progress} className="w-full" />
-//             <p className="text-sm text-gray-500 text-right">{progress}%</p>
-//           </div>
-//         )}
-        
-//         {convertedText && (
-//           <div className="space-y-2">
-//             <Label htmlFor="converted-text">Extracted Text</Label>
-//             <div className="border rounded-md p-3 bg-gray-50 max-h-64 overflow-y-auto">
-//               <pre className="whitespace-pre-wrap text-sm">{convertedText}</pre>
-//             </div>
-//           </div>
-//         )}
-//       </CardContent>
-      
-//       <CardFooter className="flex justify-between">
-//         <div>
-//           <Button 
-//             variant="outline" 
-//             onClick={handleClear}
-//             disabled={loading || (!file && !convertedText)}
-//           >
-//             Clear
-//           </Button>
-//         </div>
-//         <div className="flex gap-2">
-//           <Button 
-//             onClick={handleConvert} 
-//             disabled={!file || loading}
-//             className="flex items-center gap-2"
-//           >
-//             <Upload className="h-4 w-4" />
-//             Convert PDF
-//           </Button>
+        if (file.type === 'text/plain') {
+          // Convert text file
+          const text = await readFileAsText(file);
           
-//           <Button 
-//             variant="secondary" 
-//             onClick={handleDownload} 
-//             disabled={!convertedText || loading}
-//             className="flex items-center gap-2"
-//           >
-//             <Download className="h-4 w-4" />
-//             Download Text
-//           </Button>
-//         </div>
-//       </CardFooter>
-//     </Card>
-//   );
-// };
+          // Simple text formatting
+          const lines = text.split('\n');
+          let y = 20;
+          
+          for (const line of lines) {
+            // Simple pagination
+            if (y > 280) {
+              doc.addPage();
+              y = 20;
+            }
+            
+            doc.text(line, 10, y);
+            y += 7;
+          }
+        } else {
+          // For Word documents, this is a simplified approach
+          // In a real app, you would need a more robust library to parse DOCX
+          const text = "This is a preview. Word document conversion requires additional libraries.";
+          doc.text(text, 10, 20);
+          doc.text("Please use a dedicated converter for DOCX files.", 10, 30);
+        }
+        
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        converted.push({
+          name: `${file.name.split('.')[0]}.pdf`,
+          url: pdfUrl,
+          originalName: file.name
+        });
+      } catch (error) {
+        console.error('Conversion error:', error);
+        setErrorMessage(`Error converting ${file.name}`);
+      }
+    }
 
-// export default PdfConverter;
+    setConvertedFiles(converted);
+    setIsConverting(false);
+  };
+
+  const readFileAsText = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  };
+
+  const downloadPdf = (pdfUrl, fileName) => {
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  return (
+    <div className={styles.pdfConverterContainer}>
+      <div className={styles.converterHeader}>
+        <FileText size={24} className={styles.toolIcon} />
+        <h3>PDF Converter</h3>
+        <p>Convert text and document files to PDF format</p>
+      </div>
+      
+      <div className={styles.converterContent}>
+        <div className={styles.uploadSection}>
+          <label className={styles.uploadLabel}>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileUpload}
+              accept=".txt,.doc,.docx"
+              className={styles.fileInput}
+            />
+            <Upload size={24} />
+            <span>Click to upload files</span>
+            <span className={styles.fileTypes}>TXT, DOC, DOCX</span>
+          </label>
+          
+          {errorMessage && (
+            <div className={styles.errorMessage}>
+              {errorMessage}
+            </div>
+          )}
+        </div>
+        
+        {files.length > 0 && (
+          <div className={styles.filesSection}>
+            <h4>Files to Convert</h4>
+            <ul className={styles.filesList}>
+              {files.map((file, index) => (
+                <li key={index} className={styles.fileItem}>
+                  <File size={18} />
+                  <span className={styles.fileName}>{file.name}</span>
+                  <span className={styles.fileSize}>
+                    {(file.size / 1024).toFixed(2)} KB
+                  </span>
+                  <button
+                    className={styles.removeButton}
+                    onClick={() => removeFile(index)}
+                  >
+                    <Trash size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            
+            <button
+              className={styles.convertButton}
+              onClick={convertFiles}
+              disabled={isConverting}
+            >
+              {isConverting ? 'Converting...' : 'Convert to PDF'}
+            </button>
+          </div>
+        )}
+        
+        {convertedFiles.length > 0 && (
+          <div className={styles.resultsSection}>
+            <h4>Converted Files</h4>
+            <ul className={styles.filesList}>
+              {convertedFiles.map((file, index) => (
+                <li key={index} className={styles.fileItem}>
+                  <FileText size={18} />
+                  <span className={styles.fileName}>{file.name}</span>
+                  <span className={styles.originalName}>
+                    from {file.originalName}
+                  </span>
+                  <button
+                    className={styles.downloadButton}
+                    onClick={() => downloadPdf(file.url, file.name)}
+                  >
+                    <Download size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default PdfConverter;

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { DocumentProvider } from './contexts/DocumentContext';
-import { MoodProvider } from './contexts/MoodContext';
+// import { MoodProvider } from './contexts/MoodContext';
 
 // Import layout components
 import Header from './components/Common/Header';
@@ -28,7 +28,7 @@ function App() {
     <Router>
       <AuthProvider>
         <DocumentProvider>
-          <MoodProvider>
+          
             <div className="app">
               <Header />
               <main>
@@ -106,7 +106,7 @@ function App() {
                 </Routes>
               </main>
             </div>
-          </MoodProvider>
+          
         </DocumentProvider>
       </AuthProvider>
     </Router>

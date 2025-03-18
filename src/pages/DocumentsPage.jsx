@@ -1,32 +1,40 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  FileText, 
-  Folder, 
-  Search, 
-  Plus, 
-  MoreVertical, 
-  Trash, 
-  Edit, 
-  Clock, 
-  Filter, 
-  Grid, 
+import {
+  FileText,
+  Folder,
+  Search,
+  Plus,
+  MoreVertical,
+  Trash,
+  Edit,
+  Clock,
+  Filter,
+  Grid,
   List as ListIcon,
-  ChevronDown
+  ChevronDown,
+  FileDigit,
+  SplitSquareVertical
 } from 'lucide-react';
 import { useDocuments } from '../contexts/DocumentContext';
 import { useAuth } from '../contexts/AuthContext';
+import DocumentUpload from '../components/Documents/DocumentUpload';
+import SplitViewContainer from '../components/Documents/SplitViewContainer';
 import styles from '../styles/Pages/DocumentPage.module.css';
+import DocumentViewer from '../components/Documents/DocumentViewer';
 
 const DocumentPage = () => {
-  const { 
-    documents, 
-    loading, 
-    error, 
-    uploadDocument, 
-    deleteDocument, 
-    updateDocument, 
+  const {
+    documents,
+    loading,
+    error,
+    uploadDocument,
+    deleteDocument,
+    updateDocument,
     deleteSubject,
-    setDocuments
+    summarizeDocument,
+    setDocuments,
+    summarizing,
+    summaryError
   } = useDocuments();
   const { currentUser } = useAuth();
 
@@ -40,6 +48,11 @@ const DocumentPage = () => {
   const [newName, setNewName] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+
+  // New state for summarization
+  const [showSplitView, setShowSplitView] = useState(false);
+  const [documentToSummarize, setDocumentToSummarize] = useState(null);
+
   const [newDocument, setNewDocument] = useState({
     file: null,
     subject: '',
@@ -52,19 +65,27 @@ const DocumentPage = () => {
   const filteredItems = useMemo(() => {
     if (!documents || documents.length === 0) return [];
 
-    return (currentFolder
-      ? documents
-          .filter(doc => doc?.subject === currentFolder)
-      : [...new Set(documents.map(doc => doc?.subject))]
-          .filter(subject => subject)
-          .map(subject => ({
-            type: 'folder',
-            name: subject,
-            count: documents.filter(d => d?.subject === subject).length
-          }))
-    ).filter(item => 
-      item?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    if (currentFolder) {
+      return documents
+        .filter(doc => doc.subject === currentFolder)
+        .filter(doc =>
+          doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          doc.subject // Extra safety check
+        );
+    }
+    else {
+      // Create folders from unique subjects and apply search to folder names
+      return [...new Set(documents.map(doc => doc?.subject))]
+        .filter(subject => subject)
+        .map(subject => ({
+          type: 'folder',
+          name: subject,
+          count: documents.filter(d => d?.subject === subject).length
+        }))// Continued from previous code...
+        .filter(folder =>
+          folder.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
   }, [currentFolder, documents, searchQuery]);
 
   const sortedItems = useMemo(() => {
@@ -72,7 +93,7 @@ const DocumentPage = () => {
       if (sortBy === 'recent') {
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       } else if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
+        return a.name?.localeCompare(b.name) || 0;
       }
       return 0;
     });
@@ -109,13 +130,31 @@ const DocumentPage = () => {
       alert('File size must be less than 1MB');
     }
   };
+  
   const openDocument = (doc) => {
-    // Logic to open/preview document
-    // This could be setting state to show a preview modal or triggering a download
-    setActiveDocument(doc);
-    // You might want to add additional logic here, like opening the document
-    console.log('Opening document:', doc);
+    if (doc.fileURL) {
+      // For PDFs, you might want to open in a viewer
+      if (doc.fileType === 'application/pdf') {
+        setActiveDocument(doc);
+        // Close split view if it's open
+        setShowSplitView(false);
+        setDocumentToSummarize(null);
+      } else {
+        // For other file types, open in a new tab
+        window.open(doc.fileURL, '_blank');
+      }
+    } else {
+      console.error('No file URL available');
+    }
   };
+
+  // New function to handle summarize action
+  const handleSummarize = (doc) => {
+    setDocumentToSummarize(doc);
+    setShowSplitView(true);
+    setActiveDocument(null); // Close document viewer if open
+  };
+  
   const handleUpload = async () => {
     // Ensure subject is set, either from current folder or input
     if (!newDocument.subject) {
@@ -129,11 +168,11 @@ const DocumentPage = () => {
     }
 
     const result = await uploadDocument(
-      newDocument.file, 
-      newDocument.subject, 
+      newDocument.file,
+      newDocument.subject,
       newDocument.topic
     );
-    
+
     if (result) {
       setShowUploadModal(false);
       setNewDocument({ file: null, subject: currentFolder || '', topic: '' });
@@ -158,9 +197,9 @@ const DocumentPage = () => {
       await updateDocument(editingItem.id, { fileName: newName });
     } else {
       try {
-        await updateDocument(null, { 
-          oldSubject: editingItem.name, 
-          newSubject: newName 
+        await updateDocument(null, {
+          oldSubject: editingItem.name,
+          newSubject: newName
         });
         // Update current folder if renamed
         if (currentFolder === editingItem.name) {
@@ -233,30 +272,34 @@ const DocumentPage = () => {
           <div className={styles.pathNavigator}>
             {currentFolder && (
               <>
-                <button onClick={handleBackToRoot}>Documents</button>
-                <span> / </span>
-                <span>{currentFolder}</span>
+                <button onClick={handleBackToRoot} className={styles.pathButton}>Documents</button>
+                <span className={styles.pathSeparator}> / </span>
+                <span className={styles.currentPath}>{currentFolder}</span>
               </>
             )}
-            {!currentFolder && <span>All Documents</span>}
+            {!currentFolder && <span className={styles.currentPath}>All Documents</span>}
           </div>
           <div className={styles.sortControl}>
-            <Filter />
-            <select value={sortBy} onChange={handleSortChange}>
+            <Filter className={styles.filterIcon} />
+            <select value={sortBy} onChange={handleSortChange} className={styles.sortSelect}>
               <option value="recent">Recent</option>
               <option value="name">Name</option>
             </select>
           </div>
           <div className={styles.viewToggle}>
-            <button onClick={toggleViewMode}>
+            <button 
+              onClick={toggleViewMode} 
+              className={styles.viewModeButton} 
+              aria-label={viewMode === 'grid' ? 'Switch to list view' : 'Switch to grid view'}
+            >
               {viewMode === 'grid' ? <ListIcon /> : <Grid />}
             </button>
             <button
               className={styles.buttonPrimary}
               onClick={openUploadModal}
             >
-              <Plus />
-              New
+              <Plus className={styles.buttonIcon} />
+              <span>{currentFolder ? 'Add Document' : 'New'}</span>
             </button>
           </div>
         </div>
@@ -264,47 +307,55 @@ const DocumentPage = () => {
         {sortedItems.length > 0 ? (
           <div className={viewMode === 'grid' ? styles.gridView : styles.listView}>
             {sortedItems.map(item => (
-              <div 
-                key={item.name} 
-                className={styles.itemCard}
-                onClick={() => item.type === 'folder' ? handleFolderClick(item.name) : openDocument(item)}
+              <div
+                key={item.id || item.name}
+                className={`${styles.itemCard} ${styles.itemCardAnimate}`}
               >
                 <div className={styles.itemCardHeader}>
                   {item.type === 'folder' ? (
                     <>
-                      <Folder className={styles.iconYellow} />
-                      <div className={styles.folderInfo}>
-                        <h3>{item.name}</h3>
-                        <p>{item.count} document{item.count !== 1 ? 's' : ''}</p>
+                      <div 
+                        className={styles.folderClickArea} 
+                        onClick={() => handleFolderClick(item.name)}
+                      >
+                        <Folder className={styles.iconYellow} />
+                        <div className={styles.folderInfo}>
+                          <h3 className={styles.folderName}>{item.name}</h3>
+                          <p className={styles.folderCount}>{item.count} document{item.count !== 1 ? 's' : ''}</p>
+                        </div>
                       </div>
                       <div className={styles.itemActions}>
-                        <button 
+                        <button
+                          className={styles.optionsButton}
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleItemOptions(item.name);
                           }}
+                          aria-label="Show folder options"
                         >
                           <MoreVertical />
                         </button>
                         {expandedOptions[item.name] && (
                           <div className={styles.optionsMenu}>
-                            <button 
+                            <button
+                              className={styles.optionButton}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditingItem({...item, type: 'folder'});
+                                setEditingItem({ ...item, type: 'folder' });
                                 setNewName(item.name);
                               }}
                             >
-                              <Edit size={16} /> Rename
+                              <Edit size={16} className={styles.optionIcon} /> Rename
                             </button>
-                            <button 
+                            <button
+                              className={`${styles.optionButton} ${styles.dangerButton}`}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setItemToDelete(item);
+                                setItemToDelete({ ...item, type: 'folder' });
                                 setShowDeleteModal(true);
                               }}
                             >
-                              <Trash size={16} /> Delete
+                              <Trash size={16} className={styles.optionIcon} /> Delete
                             </button>
                           </div>
                         )}
@@ -312,42 +363,68 @@ const DocumentPage = () => {
                     </>
                   ) : (
                     <>
-                      <FileText className={styles.iconBlue} />
-                      <div className={styles.documentInfo}>
-                        <h3>{item.fileName}</h3>
-                        <p>
-                          <Clock /> {formatDate(item.createdAt)}
-                          {item.fileSize && ` · ${item.fileSize}`}
-                        </p>
+                      <div className={styles.documentClickArea} onClick={() => openDocument(item)}>
+                        <FileText className={styles.iconBlue} />
+                        <div className={styles.documentInfo}>
+                          <h3 className={styles.documentName}>{item.fileName}</h3>
+                          <p className={styles.documentMeta}>
+                            <Clock className={styles.metaIcon} /> {formatDate(item.createdAt)}
+                            {item.fileSize && <span className={styles.fileSizeBadge}>{item.fileSize}</span>}
+                          </p>
+                        </div>
                       </div>
                       <div className={styles.itemActions}>
                         <button 
+                          className={`${styles.summaryButton} ${item.hasSummary ? styles.hasSummary : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSummarize(item);
+                          }}
+                          aria-label="Summarize document"
+                          title={item.hasSummary ? "View summary" : "Generate summary"}
+                        >
+                          <SplitSquareVertical size={18} />
+                        </button>
+                        <button
+                          className={styles.optionsButton}
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleItemOptions(item.id);
                           }}
+                          aria-label="Show document options"
                         >
                           <MoreVertical />
                         </button>
                         {expandedOptions[item.id] && (
                           <div className={styles.optionsMenu}>
-                            <button 
+                            <button
+                              className={styles.optionButton}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditingItem({...item, type: 'document'});
+                                handleSummarize(item);
+                              }}
+                            >
+                              <FileDigit size={16} className={styles.optionIcon} /> Summarize
+                            </button>
+                            <button
+                              className={styles.optionButton}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingItem({ ...item, type: 'document' });
                                 setNewName(item.fileName);
                               }}
                             >
-                              <Edit size={16} /> Rename
+                              <Edit size={16} className={styles.optionIcon} /> Rename
                             </button>
-                            <button 
+                            <button
+                              className={`${styles.optionButton} ${styles.dangerButton}`}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setItemToDelete(item);
+                                setItemToDelete({ ...item, type: 'document' });
                                 setShowDeleteModal(true);
                               }}
                             >
-                              <Trash size={16} /> Delete
+                              <Trash size={16} className={styles.optionIcon} /> Delete
                             </button>
                           </div>
                         )}
@@ -360,15 +437,19 @@ const DocumentPage = () => {
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <FileText className={styles.iconBlue} size={48} />
-            <h3>No documents found</h3>
-            <p>{searchQuery ? `No results for "${searchQuery}"` : (currentFolder ? `No documents in ${currentFolder}` : 'This folder is empty')}</p>
+            <FileText className={styles.emptyIcon} size={48} />
+            <h3 className={styles.emptyTitle}>{currentFolder ? `${currentFolder} Folder is Empty` : 'No Directories Found'}</h3>
+            <p className={styles.emptyText}>
+              {currentFolder 
+                ? 'Upload your first document to this folder' 
+                : 'Create your first subject directory to organize your documents'}
+            </p>
             <button
-              className={styles.buttonPrimary}
+              className={`${styles.buttonPrimary} ${styles.emptyButton}`}
               onClick={openUploadModal}
             >
-              <Plus />
-              Add Document
+              <Plus className={styles.buttonIcon} />
+              {currentFolder ? 'Add Document to Folder' : 'Create First Directory'}
             </button>
           </div>
         )}
@@ -376,39 +457,10 @@ const DocumentPage = () => {
         {/* Upload Modal */}
         {showUploadModal && (
           <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
-              <h2>Upload Document</h2>
-              <div className={styles.formGroup}>
-                <label>Subject*</label>
-                <input
-                  type="text"
-                  value={newDocument.subject}
-                  onChange={(e) => setNewDocument(prev => ({ ...prev, subject: e.target.value }))}
-                  placeholder={currentFolder ? `Currently in ${currentFolder}` : 'e.g., Mathematics'}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Topic (Optional)</label>
-                <input
-                  type="text"
-                  value={newDocument.topic}
-                  onChange={(e) => setNewDocument(prev => ({ ...prev, topic: e.target.value }))}
-                  placeholder="e.g., Algebra"
-                />
-              </div>
-              <div className={styles.fileInput}>
-                <label>
-                  <FileText className={styles.icon} />
-                  {newDocument.file ? newDocument.file.name : 'Choose a file'}
-                  <input type="file" onChange={handleFileChange} accept=".pdf,.txt,.docx" hidden />
-                </label>
-              </div>
-              <div className={styles.modalActions}>
-                <button onClick={() => setShowUploadModal(false)}>Cancel</button>
-                <button onClick={handleUpload}>Upload</button>
-              </div>
-            </div>
+            <DocumentUpload
+              currentFolder={currentFolder}
+              onClose={() => setShowUploadModal(false)}
+            />
           </div>
         )}
 
@@ -416,11 +468,26 @@ const DocumentPage = () => {
         {showDeleteModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-              <h3>Delete {itemToDelete?.type === 'document' ? 'Document' : 'Folder'}?</h3>
-              <p>Are you sure you want to delete "{itemToDelete?.fileName || itemToDelete?.name}"?</p>
+              <h3 className={styles.modalTitle}>Delete {itemToDelete?.type === 'document' ? 'Document' : 'Folder'}?</h3>
+              <p className={styles.modalText}>
+                Are you sure you want to delete "{itemToDelete?.fileName || itemToDelete?.name}"?
+                {itemToDelete?.type !== 'document' && (
+                  <span className={styles.warningText}>
+                    This will delete all documents within this folder.
+                  </span>
+                )}
+              </p>
               <div className={styles.modalActions}>
-                <button onClick={() => setShowDeleteModal(false)}>Cancel</button>
-                <button onClick={handleDelete} className={styles.deleteButton}>
+                <button 
+                  onClick={() => setShowDeleteModal(false)}
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleDelete} 
+                  className={styles.deleteButton}
+                >
                   Delete
                 </button>
               </div>
@@ -428,26 +495,61 @@ const DocumentPage = () => {
           </div>
         )}
 
+        {/* Document Viewer */}
+        {activeDocument && (
+          <div className={styles.modalOverlay}>
+            <DocumentViewer
+              documentId={activeDocument.id}
+              onClose={() => setActiveDocument(null)}
+            />
+          </div>
+        )}
+
+        {/* Split View Container for Document and Summary */}
+        {showSplitView && documentToSummarize && (
+          <div className={styles.modalOverlay}>
+            <SplitViewContainer
+              document={documentToSummarize}
+              onClose={() => {
+                setShowSplitView(false);
+                setDocumentToSummarize(null);
+              }}
+            />
+          </div>
+        )}
+
         {/* Rename Modal */}
         {editingItem && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-              <h3>Rename {editingItem.type}</h3>
+              <h3 className={styles.modalTitle}>Rename {editingItem.type}</h3>
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className={styles.editInput}
-              />
-              <div className={styles.modalActions}>
-                <button onClick={() => setEditingItem(null)}>Cancel</button>
-                <button onClick={handleRename}>Save</button>
+                autoFocus
+                />
+                <div className={styles.modalActions}>
+                  <button 
+                    onClick={() => setEditingItem(null)}
+                    className={styles.cancelButton}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleRename} 
+                    className={styles.saveButton}
+                    disabled={!newName.trim() || newName === editingItem.fileName || newName === editingItem.name}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default DocumentPage;
+          )}
+        </main>
+      </div>
+    );
+  };
+  
+  export default DocumentPage;

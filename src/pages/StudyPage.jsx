@@ -1,49 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/Study/StudyPage.module.css';
 import ToolsGrid from '../components/Tools/ToolsGrid';
-// import PdfConverter from '../components/Tools/PdfConverter';
-// import FlashcardTool from '../components/Tools/FlashcardTool';
-// import PomodoroTimer from '../components/Tools/PomodoroTimer';
-// import MathSolver from '../components/Tools/MathSolver';
-// import UnitConverter from '../components/Tools/UnitConverter';
-// import Dictionary from '../components/Tools/Dictionary';
-// import MarkdownEditor from '../components/Tools/MarkdownEditor';
-// import VoiceNotes from '../components/Tools/VoiceNotes';
-// import StickyNotes from '../components/Tools/StickyNotes';
-// import QuizGenerator from '../components/Tools/QuizGenerator';
+import PdfConverter from '../components/Tools/PdfConverter';
+import Dictionary from '../components/Tools/Dictionary';
+import QuizGenerator from '../components/Tools/QuizGenerator';
+import Flashcards from '../components/Tools/Flashcards';
+import PomodoroTimer from '../components/Tools/PomodoroTimer';
+import StickyNotes from '../components/Tools/StickyNotes';
+import MathSolver from '../components/Tools/MathSolver';
+import UnitConverter from '../components/Tools/UnitConverter';
+import MarkdownEditor from '../components/Tools/MarkdownEditor';
+import VoiceNotes from '../components/Tools/VoiceNotes';
+import FlashcardMaker from '../components/Tools/FlashcardMaker';
 
 const StudyPage = () => {
   const [selectedTool, setSelectedTool] = useState(null);
+  const [toolVisible, setToolVisible] = useState(false);
   
-  // Function to handle tool selection
   const handleToolSelect = (toolName) => {
-    setSelectedTool(toolName);
+    // Add fade-out effect before changing tool
+    if (selectedTool) {
+      setToolVisible(false);
+      
+      // Wait for animation to complete before changing tool
+      setTimeout(() => {
+        setSelectedTool(toolName);
+        // Trigger fade-in for the new tool
+        setTimeout(() => setToolVisible(true), 50);
+      }, 300);
+    } else {
+      setSelectedTool(toolName);
+      // Trigger fade-in for the first tool selection
+      setTimeout(() => setToolVisible(true), 50);
+    }
   };
   
-  // Function to render the selected tool
   const renderSelectedTool = () => {
     switch(selectedTool) {
-      // case 'pdf-converter':
-      //   return <PdfConverter />;
-      // case 'flashcard-tool':
-      //   return <FlashcardTool />;
-      // case 'pomodoro-timer':
-      //   return <PomodoroTimer />;
-      // case 'math-solver':
-      //   return <MathSolver />;
-      // case 'unit-converter':
-      //   return <UnitConverter />;
-      // case 'dictionary':
-      //   return <Dictionary />;
-      // case 'markdown-editor':
-      //   return <MarkdownEditor />;
-      // case 'voice-notes':
-      //   return <VoiceNotes />;
-      // case 'sticky-notes':
-      //   return <StickyNotes />;
-      // case 'quiz-generator':
-      //   return <QuizGenerator />;
+      case 'text-to-pdf':
+        return <PdfConverter />;
+      case 'dictionary':
+        return <Dictionary />;
+      case 'mcq-quiz':
+        return <QuizGenerator />;
+      case 'flashcards':
+        return <Flashcards />;
+      case 'pomodoro-timer':
+        return <PomodoroTimer />;
+      case 'sticky-notes':
+        return <StickyNotes />;
+      case 'math-solver':
+        return <MathSolver />;
+      case 'unit-converter':
+        return <UnitConverter />;
+      case 'markdown-editor':
+        return <MarkdownEditor />;
+      case 'voice-notes':
+        return <VoiceNotes />;
+      case 'flashcard-generator':
+        return <FlashcardMaker />;
       default:
         return (
           <div className={styles.toolPlaceholder}>
@@ -67,7 +83,13 @@ const StudyPage = () => {
           </div>
           <Link to="/documents" className={styles.sectionLink}>
             <div className={styles.sectionCard}>
-              <img src="/assets/icons/document-icon.svg" alt="Documents" className={styles.sectionIcon} />
+              <div className={styles.sectionIconContainer}>
+                <img 
+                  src="https://fonts.gstatic.com/s/i/materialiconsoutlined/folder/v1/24px.svg" 
+                  alt="Documents" 
+                  className={styles.sectionIcon} 
+                />
+              </div>
               <div className={styles.sectionContent}>
                 <h3>Document Library</h3>
                 <p>Manage your study materials, generate summaries, and create quizzes</p>
@@ -85,7 +107,13 @@ const StudyPage = () => {
           </div>
           <Link to="/interview" className={styles.sectionLink}>
             <div className={styles.sectionCard}>
-              <img src="/assets/icons/interview-icon.svg" alt="Interview" className={styles.sectionIcon} />
+              <div className={styles.sectionIconContainer}>
+                <img 
+                  src="https://fonts.gstatic.com/s/i/materialiconsoutlined/mic/v1/24px.svg" 
+                  alt="Interview" 
+                  className={styles.sectionIcon} 
+                />
+              </div>
               <div className={styles.sectionContent}>
                 <h3>Interview Assistant</h3>
                 <p>Get role-specific questions, practice with speech recognition, and receive instant feedback</p>
@@ -102,9 +130,9 @@ const StudyPage = () => {
             <p>Productivity tools to enhance your study experience</p>
           </div>
           <div className={styles.toolsContainer}>
-            <ToolsGrid onSelectTool={handleToolSelect} />
+            <ToolsGrid onSelectTool={handleToolSelect} selectedTool={selectedTool} />
             
-            <div className={styles.toolDisplay}>
+            <div className={`${styles.toolDisplay} ${toolVisible ? styles.toolVisible : ''}`}>
               {renderSelectedTool()}
             </div>
           </div>
