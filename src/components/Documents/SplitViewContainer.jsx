@@ -2,13 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Maximize2, Minimize2, ArrowLeft, ArrowRight } from 'lucide-react';
 import styles from '../../styles/Documents/SplitView.module.css';
 
-const SplitViewContainer = ({ leftContent, rightContent, leftTitle, rightTitle }) => {
+const SplitViewContainer = ({ 
+  leftContent, 
+  rightContent, 
+  leftTitle, 
+  rightTitle,
+  leftFooter,
+  rightFooter
+}) => {
   const [splitPosition, setSplitPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [leftFullscreen, setLeftFullscreen] = useState(false);
   const [rightFullscreen, setRightFullscreen] = useState(false);
   const containerRef = useRef(null);
   const splitterRef = useRef(null);
+  const [showSplitterTooltip, setShowSplitterTooltip] = useState(false);
 
   // Handle mouse dragging for splitter
   useEffect(() => {
@@ -88,6 +96,7 @@ const SplitViewContainer = ({ leftContent, rightContent, leftTitle, rightTitle }
         <div className={styles.panelContent}>
           {leftContent}
         </div>
+        {leftFooter && <div className={styles.panelFooter}>{leftFooter}</div>}
       </div>
       
       {!leftFullscreen && !rightFullscreen && (
@@ -96,6 +105,8 @@ const SplitViewContainer = ({ leftContent, rightContent, leftTitle, rightTitle }
           className={styles.splitter}
           onMouseDown={handleMouseDown}
           onKeyDown={handleKeyDown}
+          onMouseEnter={() => setShowSplitterTooltip(true)}
+          onMouseLeave={() => setShowSplitterTooltip(false)}
           tabIndex="0"
           role="separator"
           aria-valuenow={splitPosition}
@@ -107,6 +118,11 @@ const SplitViewContainer = ({ leftContent, rightContent, leftTitle, rightTitle }
             <ArrowLeft size={12} />
             <ArrowRight size={12} />
           </div>
+          {showSplitterTooltip && (
+            <div className={styles.splitterTooltip}>
+              Drag to resize
+            </div>
+          )}
         </div>
       )}
       
@@ -127,6 +143,7 @@ const SplitViewContainer = ({ leftContent, rightContent, leftTitle, rightTitle }
         <div className={styles.panelContent}>
           {rightContent}
         </div>
+        {rightFooter && <div className={styles.panelFooter}>{rightFooter}</div>}
       </div>
     </div>
   );

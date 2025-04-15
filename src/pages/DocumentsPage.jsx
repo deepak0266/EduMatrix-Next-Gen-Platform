@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FileText,
   Folder,
@@ -38,6 +39,7 @@ const DocumentPage = () => {
   } = useDocuments();
   const { currentUser } = useAuth();
 
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('recent');
   const [viewMode, setViewMode] = useState('grid');
@@ -116,6 +118,14 @@ const DocumentPage = () => {
     setNewDocument(prev => ({ ...prev, subject: folder }));
   };
 
+  const handleDocumentClick = (documentId) => {
+    if (!documentId) {
+      console.error("Attempted to open document with undefined ID");
+      return;
+    }
+    navigate(`/documents/view/${documentId}`);
+  };
+
   const handleBackToRoot = () => {
     setCurrentFolder(null);
     // Reset subject when going back to root
@@ -130,7 +140,7 @@ const DocumentPage = () => {
       alert('File size must be less than 1MB');
     }
   };
-  
+
   const openDocument = (doc) => {
     if (doc.fileURL) {
       // For PDFs, you might want to open in a viewer
@@ -154,7 +164,7 @@ const DocumentPage = () => {
     setShowSplitView(true);
     setActiveDocument(null); // Close document viewer if open
   };
-  
+
   const handleUpload = async () => {
     // Ensure subject is set, either from current folder or input
     if (!newDocument.subject) {
@@ -287,9 +297,9 @@ const DocumentPage = () => {
             </select>
           </div>
           <div className={styles.viewToggle}>
-            <button 
-              onClick={toggleViewMode} 
-              className={styles.viewModeButton} 
+            <button
+              onClick={toggleViewMode}
+              className={styles.viewModeButton}
               aria-label={viewMode === 'grid' ? 'Switch to list view' : 'Switch to grid view'}
             >
               {viewMode === 'grid' ? <ListIcon /> : <Grid />}
@@ -314,8 +324,8 @@ const DocumentPage = () => {
                 <div className={styles.itemCardHeader}>
                   {item.type === 'folder' ? (
                     <>
-                      <div 
-                        className={styles.folderClickArea} 
+                      <div
+                        className={styles.folderClickArea}
                         onClick={() => handleFolderClick(item.name)}
                       >
                         <Folder className={styles.iconYellow} />
@@ -363,7 +373,7 @@ const DocumentPage = () => {
                     </>
                   ) : (
                     <>
-                      <div className={styles.documentClickArea} onClick={() => openDocument(item)}>
+                      <div className={styles.documentClickArea} onClick={() => handleDocumentClick(item.id)}>
                         <FileText className={styles.iconBlue} />
                         <div className={styles.documentInfo}>
                           <h3 className={styles.documentName}>{item.fileName}</h3>
@@ -374,7 +384,7 @@ const DocumentPage = () => {
                         </div>
                       </div>
                       <div className={styles.itemActions}>
-                        <button 
+                        <button
                           className={`${styles.summaryButton} ${item.hasSummary ? styles.hasSummary : ''}`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -440,8 +450,8 @@ const DocumentPage = () => {
             <FileText className={styles.emptyIcon} size={48} />
             <h3 className={styles.emptyTitle}>{currentFolder ? `${currentFolder} Folder is Empty` : 'No Directories Found'}</h3>
             <p className={styles.emptyText}>
-              {currentFolder 
-                ? 'Upload your first document to this folder' 
+              {currentFolder
+                ? 'Upload your first document to this folder'
                 : 'Create your first subject directory to organize your documents'}
             </p>
             <button
@@ -478,14 +488,14 @@ const DocumentPage = () => {
                 )}
               </p>
               <div className={styles.modalActions}>
-                <button 
+                <button
                   onClick={() => setShowDeleteModal(false)}
                   className={styles.cancelButton}
                 >
                   Cancel
                 </button>
-                <button 
-                  onClick={handleDelete} 
+                <button
+                  onClick={handleDelete}
                   className={styles.deleteButton}
                 >
                   Delete
@@ -528,28 +538,28 @@ const DocumentPage = () => {
                 onChange={(e) => setNewName(e.target.value)}
                 className={styles.editInput}
                 autoFocus
-                />
-                <div className={styles.modalActions}>
-                  <button 
-                    onClick={() => setEditingItem(null)}
-                    className={styles.cancelButton}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={handleRename} 
-                    className={styles.saveButton}
-                    disabled={!newName.trim() || newName === editingItem.fileName || newName === editingItem.name}
-                  >
-                    Save
-                  </button>
-                </div>
+              />
+              <div className={styles.modalActions}>
+                <button
+                  onClick={() => setEditingItem(null)}
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleRename}
+                  className={styles.saveButton}
+                  disabled={!newName.trim() || newName === editingItem.fileName || newName === editingItem.name}
+                >
+                  Save
+                </button>
               </div>
             </div>
-          )}
-        </main>
-      </div>
-    );
-  };
-  
-  export default DocumentPage;
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default DocumentPage;

@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useSummary } from '../../contexts/SummaryContext';
 import SummaryControls from './SummaryControls';
 import SummaryActions from './SummaryActions';
 import SummaryPlaceholder from './SummaryPlaceholder';
-import { Check, Copy } from 'lucide-react';
+import { Check } from 'lucide-react';
 import styles from '../../styles/Documents/SummaryViewer.module.css';
 
-const SummaryViewer = ({ documentContent, documentId }) => {
-  const { 
-    summary, 
-    summaryLoading, 
-    summaryError, 
-    summaryLength, 
-    summaryFormat,
-    setSummaryLength, 
-    setSummaryFormat, 
-    generateSummary, 
-    saveSummary 
-  } = useSummary();
-  
+const SummaryViewer = ({ 
+  documentContent, 
+  documentId,
+  summary,
+  loading,
+  error,
+  summaryLength,
+  setSummaryLength,
+  summaryFormat,
+  setSummaryFormat,
+  onGenerateQuiz,
+  onExportSummary
+}) => {
   const [copied, setCopied] = useState(false);
   const [stats, setStats] = useState({
     originalWordCount: 0,
@@ -38,10 +37,10 @@ const SummaryViewer = ({ documentContent, documentId }) => {
   }, [documentContent]);
 
   useEffect(() => {
-    if (summary) {
-      const wordCount = summary.trim().split(/\s+/).length;
+    if (summary && summary.content) {
+      const wordCount = summary.content.trim().split(/\s+/).length;
       const ratio = documentContent ? 
-        Math.round((wordCount / stats.originalWordCount) * 100) : 0;
+        Math.round(100 - ((wordCount / stats.originalWordCount) * 100)) : 0;
       
       setStats(prev => ({
         ...prev,
@@ -51,48 +50,10 @@ const SummaryViewer = ({ documentContent, documentId }) => {
     }
   }, [summary, documentContent, stats.originalWordCount]);
 
-  const handleGenerateSummary = async () => {
-    if (!documentContent) return;
-    await generateSummary(documentContent, { 
-      length: summaryLength, 
-      format: summaryFormat 
-    });
-  };
-
-  useEffect(() => {
-    if (documentContent) {
-      handleGenerateSummary();
-    }
-  }, [documentContent, summaryLength, summaryFormat]);
-
-  const handleSave = async () => {
-    if (!summary || !documentId) return;
-    
-    try {
-      await saveSummary(documentId, summary);
-      setShowSuccessMessage(true);
-      setTimeout(() => setShowSuccessMessage(false), 3000);
-    } catch (error) {
-      console.error('Failed to save summary:', error);
-    }
-  };
-
-  const handleDownload = () => {
-    if (!summary) return;
-    
-    const element = document.createElement('a');
-    const file = new Blob([summary], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = `summary-${new Date().toISOString().slice(0,10)}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
-
   const handleCopy = () => {
-    if (!summary) return;
+    if (!summary || !summary.content) return;
     
-    navigator.clipboard.writeText(summary)
+    navigator.clipboard.writeText(summary.content)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -100,13 +61,9 @@ const SummaryViewer = ({ documentContent, documentId }) => {
       .catch(err => console.error('Failed to copy summary:', err));
   };
 
-  const handleShare = () => {
-    if (!summary || !navigator.share) return;
-    
-    navigator.share({
-      title: 'Document Summary',
-      text: summary,
-    }).catch(err => console.error('Failed to share summary:', err));
+  const handleSave = () => {
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
   };
 
   if (!documentContent) {
@@ -123,8 +80,11 @@ const SummaryViewer = ({ documentContent, documentId }) => {
           setSummaryLength={setSummaryLength}
           summaryFormat={summaryFormat}
           setSummaryFormat={setSummaryFormat}
-          onRefresh={handleGenerateSummary}
-          isLoading={summaryLoading}
+          onRefresh={() => {
+            // This should trigger re-summarization
+            if (onExportSummary) onExportSummary();
+          }}
+          isLoading={loading}
         />
       </div>
       
@@ -146,28 +106,38 @@ const SummaryViewer = ({ documentContent, documentId }) => {
       </div>
       
       <div className={styles.summaryContent}>
-        {summaryLoading ? (
+        {loading ? (
           <SummaryPlaceholder isLoading={true} />
-        ) : summaryError ? (
-          <SummaryPlaceholder error={summaryError} />
+        ) : error ? (
+          <SummaryPlaceholder error={error} />
         ) : (
           <div className={styles.summaryText}>
-            {summaryFormat === 'paragraphs' && (
-              <p>{summary}</p>
-            )}
-            {summaryFormat === 'bullets' && (
-              <ul className={styles.bulletList}>
-                {summary.split('\n\n').map((bullet, index) => (
-                  <li key={index}>{bullet.replace('• ', '')}</li>
-                ))}
-              </ul>
-            )}
-            {summaryFormat === 'outline' && (
-              <ol className={styles.outlineList}>
-                {summary.split('\n\n').map((point, index) => (
-                  <li key={index}>{point.replace(/^\d+\.\s/, '')}</li>
-                ))}
-              </ol>
+            {summary && summary.content ? (
+              <>
+                {summaryFormat === 'paragraphs' && (
+                  <div className={styles.paragraphView}>
+                    {summary.content.split('\n\n').map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
+                )}
+                {summaryFormat === 'bullets' && (
+                  <ul className={styles.bulletList}>
+                    {summary.content.split('\n').filter(line => line.trim()).map((bullet, index) => (
+                      <li key={index}>{bullet.replace(/^•\s*/, '')}</li>
+                    ))}
+                  </ul>
+                )}
+                {summaryFormat === 'outline' && (
+                  <ol className={styles.outlineList}>
+                    {summary.content.split('\n\n').map((point, index) => (
+                      <li key={index}>{point.replace(/^\d+\.\s/, '')}</li>
+                    ))}
+                  </ol>
+                )}
+              </>
+            ) : (
+              <SummaryPlaceholder />
             )}
           </div>
         )}
@@ -176,10 +146,14 @@ const SummaryViewer = ({ documentContent, documentId }) => {
       <div className={styles.summaryActionsBar}>
         <SummaryActions
           onSave={handleSave}
-          onDownload={handleDownload}
+          onDownload={() => {
+            if (onExportSummary) onExportSummary();
+          }}
           onCopy={handleCopy}
-          onShare={handleShare}
-          disabled={summaryLoading || !summary}
+          onShare={() => {
+            // Handle sharing functionality
+          }}
+          disabled={loading || !summary || !summary.content}
         />
         
         {copied && (
@@ -196,6 +170,21 @@ const SummaryViewer = ({ documentContent, documentId }) => {
           </div>
         )}
       </div>
+      
+      {summary && summary.content && (
+        <div className={styles.quizGenerationSection}>
+          <button 
+            className={styles.generateQuizButton} 
+            onClick={onGenerateQuiz}
+            disabled={loading}
+          >
+            Generate Quiz from Summary
+          </button>
+          <p className={styles.quizInfo}>
+            Create a quiz based on this document to test your understanding.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

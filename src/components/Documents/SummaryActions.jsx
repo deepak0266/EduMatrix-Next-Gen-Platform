@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from '../../styles/Documents/SummaryActions.module.css';
-import { MessageSquare, BookOpen, FileText, Check, X } from 'lucide-react';
+import { MessageSquare, BookOpen, FileText, Check, X, Save, Download, Copy, Share2 } from 'lucide-react';
 
-const SummaryActions = ({ summary, documentTitle }) => {
+const SummaryActions = ({ 
+  onSave,
+  onDownload,
+  onCopy,
+  onShare,
+  disabled = false
+}) => {
   const [activeTab, setActiveTab] = useState('key-points');
   const [notification, setNotification] = useState(null);
   
@@ -11,10 +17,11 @@ const SummaryActions = ({ summary, documentTitle }) => {
     setTimeout(() => setNotification(null), 3000);
   };
   
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(summary)
-      .then(() => showNotification('Summary copied to clipboard!'))
-      .catch(() => showNotification('Failed to copy to clipboard', 'error'));
+  const handleCopy = () => {
+    if (onCopy) {
+      onCopy();
+      showNotification('Summary copied to clipboard!');
+    }
   };
   
   return (
@@ -41,6 +48,46 @@ const SummaryActions = ({ summary, documentTitle }) => {
           <FileText size={16} />
           <span>My Notes</span>
         </button>
+      </div>
+      
+      <div className={styles.actionButtons}>
+        <button 
+          className={styles.actionButton}
+          onClick={onSave}
+          disabled={disabled}
+        >
+          <Save size={18} />
+          <span>Save</span>
+        </button>
+        
+        <button 
+          className={styles.actionButton}
+          onClick={onDownload}
+          disabled={disabled}
+        >
+          <Download size={18} />
+          <span>Download</span>
+        </button>
+        
+        <button 
+          className={styles.actionButton}
+          onClick={handleCopy}
+          disabled={disabled}
+        >
+          <Copy size={18} />
+          <span>Copy</span>
+        </button>
+        
+        {onShare && (
+          <button 
+            className={styles.actionButton}
+            onClick={onShare}
+            disabled={disabled}
+          >
+            <Share2 size={18} />
+            <span>Share</span>
+          </button>
+        )}
       </div>
       
       {notification && (

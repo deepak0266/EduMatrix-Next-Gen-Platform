@@ -13,12 +13,8 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import axios from 'axios';
+import { uploadToCloudinary } from '../services/cloudinaryService';
 
-// Cloudinary Configuration
-const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.REACT_APP_CLOUDINARY_API_KEY;
-const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const DocumentContext = createContext();
 
@@ -35,7 +31,6 @@ export const DocumentProvider = ({ children }) => {
   const [summary, setSummary] = useState(null);
   const [summaryError, setSummaryError] = useState(null);
   const [summaryLength, setSummaryLength] = useState('medium'); // 'short', 'medium', 'long'
-
 
   // Fetch documents for the current user
   const fetchDocuments = useCallback(async () => {
@@ -67,7 +62,7 @@ export const DocumentProvider = ({ children }) => {
           topic: data.topic || '',
           fileURL: data.fileURL || '',
           fileSize: data.fileSize || '',
-          hasSummary: data.hasSummary || false, // New field for tracking if document has a summary
+          hasSummary: data.hasSummary || false, // Track if document has a summary
           summaryId: data.summaryId || null // Reference to summary if exists
         };
       });
@@ -75,8 +70,8 @@ export const DocumentProvider = ({ children }) => {
       setDocuments(docs);
     }
     catch (err) {
-      console.error('Upload error details:', err.response?.data || err.message);
-      setError(err.response?.data?.error?.message || err.message || 'Failed to upload document');
+      console.error('Fetch error details:', err.response?.data || err.message);
+      setError(err.response?.data?.error?.message || err.message || 'Failed to fetch documents');
       return null;
     }
     finally {
@@ -84,9 +79,17 @@ export const DocumentProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-
   const getDocument = async (documentId) => {
+    // Check if documentId is valid string
+    if (!documentId || typeof documentId !== 'string' || documentId.trim() === '') {
+      console.error('❌ Invalid document ID provided to getDocument');
+      setError('Invalid document ID');
+      return null;
+    }
+
+    // Check if user is logged in
     if (!currentUser || !currentUser.uid) {
+      console.error('❌ User not authenticated');
       setError('User not authenticated');
       return null;
     }
@@ -103,13 +106,15 @@ export const DocumentProvider = ({ children }) => {
       }
 
       const documentData = docSnap.data();
+
+      // Permission check
       if (documentData.userId !== currentUser.uid) {
         throw new Error('You do not have permission to access this document');
       }
 
       const documentWithId = {
         id: docSnap.id,
-        ...documentData
+        ...documentData,
       };
 
       setCurrentDocument(documentWithId);
@@ -209,7 +214,7 @@ export const DocumentProvider = ({ children }) => {
       }
 
       const documentData = docSnap.data();
-      
+
       // Verify user has permission to access this document
       if (documentData.userId !== currentUser.uid) {
         throw new Error('You do not have permission to access this document');
@@ -249,7 +254,7 @@ export const DocumentProvider = ({ children }) => {
       };
 
       let summaryId = documentData.summaryId;
-      
+
       if (summaryId) {
         // Update existing summary
         const summaryRef = doc(db, 'summaries', summaryId);
@@ -258,18 +263,18 @@ export const DocumentProvider = ({ children }) => {
         // Create new summary
         const summaryRef = await addDoc(collection(db, 'summaries'), summaryData);
         summaryId = summaryRef.id;
-        
+
         // Update document with reference to summary
-        await updateDoc(docRef, { 
+        await updateDoc(docRef, {
           hasSummary: true,
           summaryId: summaryId
         });
-        
+
         // Update local state
-        setDocuments(prev => 
-          prev.map(doc => 
-            doc.id === documentId 
-              ? { ...doc, hasSummary: true, summaryId } 
+        setDocuments(prev =>
+          prev.map(doc =>
+            doc.id === documentId
+              ? { ...doc, hasSummary: true, summaryId }
               : doc
           )
         );
@@ -310,7 +315,7 @@ export const DocumentProvider = ({ children }) => {
       }
 
       const documentData = docSnap.data();
-      
+
       if (!documentData.summaryId) {
         // No summary exists yet, create one
         return await summarizeDocument(documentId, summaryLength);
@@ -359,7 +364,7 @@ export const DocumentProvider = ({ children }) => {
       }
 
       const documentData = docSnap.data();
-      
+
       // Create summary data
       const summaryData = {
         documentId,
@@ -371,7 +376,7 @@ export const DocumentProvider = ({ children }) => {
       };
 
       let summaryId = documentData.summaryId;
-      
+
       if (summaryId) {
         // Update existing summary
         const summaryRef = doc(db, 'summaries', summaryId);
@@ -380,18 +385,18 @@ export const DocumentProvider = ({ children }) => {
         // Create new summary
         const summaryRef = await addDoc(collection(db, 'summaries'), summaryData);
         summaryId = summaryRef.id;
-        
+
         // Update document with reference to summary
-        await updateDoc(docRef, { 
+        await updateDoc(docRef, {
           hasSummary: true,
           summaryId: summaryId
         });
-        
+
         // Update local state
-        setDocuments(prev => 
-          prev.map(doc => 
-            doc.id === documentId 
-              ? { ...doc, hasSummary: true, summaryId } 
+        setDocuments(prev =>
+          prev.map(doc =>
+            doc.id === documentId
+              ? { ...doc, hasSummary: true, summaryId }
               : doc
           )
         );
@@ -432,7 +437,7 @@ export const DocumentProvider = ({ children }) => {
       }
 
       const documentData = docSnap.data();
-      
+
       if (!documentData.summaryId) {
         throw new Error('No summary exists for this document');
       }
@@ -440,22 +445,22 @@ export const DocumentProvider = ({ children }) => {
       // Delete summary document
       const summaryRef = doc(db, 'summaries', documentData.summaryId);
       await deleteDoc(summaryRef);
-      
+
       // Update document to remove summary reference
-      await updateDoc(docRef, { 
+      await updateDoc(docRef, {
         hasSummary: false,
         summaryId: null
       });
-      
+
       // Update local state
-      setDocuments(prev => 
-        prev.map(doc => 
-          doc.id === documentId 
-            ? { ...doc, hasSummary: false, summaryId: null } 
+      setDocuments(prev =>
+        prev.map(doc =>
+          doc.id === documentId
+            ? { ...doc, hasSummary: false, summaryId: null }
             : doc
         )
       );
-      
+
       setSummary(null);
     } catch (err) {
       console.error('Error deleting summary:', err);
@@ -465,113 +470,56 @@ export const DocumentProvider = ({ children }) => {
     }
   };
 
-  // Corrected Cloudinary upload section in uploadDocument function
-  const uploadDocument = async (file, subject, topic = '', currentFolderParam = null) => {
+  // Updated Cloudinary upload function to use unsigned uploads
+  const uploadDocument = async (file, subject, topic, currentFolder) => {
     if (!currentUser || !currentUser.uid) {
       setError('User not authenticated');
       return null;
     }
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
-      const finalSubject = currentFolderParam || currentFolder || subject;
-
-      if (!finalSubject) throw new Error('Subject is required');
-
-      // Document limit check
-      const subjectQuery = query(
-        collection(db, 'documents'),
-        where('userId', '==', currentUser.uid),
-        where('subject', '==', finalSubject)
-      );
-      const subjectSnapshot = await getDocs(subjectQuery);
-      if (subjectSnapshot.size >= 4) {
-        throw new Error('Maximum 4 documents per subject allowed');
-      }
-
-      // Subject limit check
-      const directoriesQuery = query(
-        collection(db, 'documents'),
-        where('userId', '==', currentUser.uid)
-      );
-      const directoriesSnapshot = await getDocs(directoriesQuery);
-      const uniqueSubjects = new Set(
-        directoriesSnapshot.docs.map(doc => doc.data().subject).filter(Boolean)
-      );
-      if (uniqueSubjects.size >= 5 && !uniqueSubjects.has(finalSubject)) {
-        throw new Error('Maximum 5 subjects allowed');
-      }
-
-      // File validation
-      const allowedTypes = ['application/pdf', 'text/plain'];
-      if (!allowedTypes.includes(file.type)) {
-        throw new Error('File type not supported. Please upload PDF or TXT');
-      }
+      // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         throw new Error('File size must be less than 5MB');
       }
-
-      if (!cloudName || !uploadPreset) {
-        console.error('Cloudinary configuration missing');
-        throw new Error('Upload configuration error. Please contact administrator.');
+  
+      // Check file type
+      const allowedTypes = ['application/pdf', 'text/plain'];
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('File type not supported. Please upload PDF or TXT files');
       }
-
-      console.log("Using cloud name:", cloudName);
-      console.log("Using upload preset:", uploadPreset);
-
-      // Cloudinary upload
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
-
-      console.log("Cloudinary Config:", {
-        cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET,
+      
+      // Upload to Cloudinary using the simplified service
+      const uploadedData = await uploadToCloudinary(file);
+      
+      if (!uploadedData || !uploadedData.secure_url) {
+        throw new Error('Failed to upload file to Cloudinary');
+      }
+      
+      // Create document in Firestore
+      const newDoc = {
+        userId: currentUser.uid,
+        fileName: file.name,
         fileType: file.type,
-        fileSize: file.size
-      });
-
-      try {
-        // Make the upload request with proper URL for raw upload
-        const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },params: {
-              upload_preset: uploadPreset,
-              api_key: apiKey,
-              resource_type: 'raw'
-            }
-          }
-          
-        );
-        console.log("Upload Response:", response.data);
-
-        const docData = {
-          userId: currentUser.uid,
-          fileName: file.name,
-          fileType: file.type,
-          fileSize: `${(file.size / 1024).toFixed(2)} KB`,
-          subject: finalSubject,
-          topic: topic || '',
-          fileURL: response.data.secure_url,
-          createdAt: new Date().toISOString()
-        };
-
-        const docRef = await addDoc(collection(db, 'documents'), docData);
-        const newDoc = { id: docRef.id, ...docData };
-
-        setDocuments(prev => [...prev, newDoc]);
-        return newDoc;
-      } catch (cloudinaryErr) {
-        console.error('Cloudinary upload error details:', cloudinaryErr);
-        console.error('Response data:', cloudinaryErr.response?.data);
-        throw new Error(cloudinaryErr.response?.data?.error?.message || 'File upload failed. Please try again.');
-      }
+        fileURL: uploadedData.secure_url,
+        fileSize: uploadedData.bytes || file.size,
+        createdAt: new Date().toISOString(),
+        subject: subject || 'Uncategorized',
+        topic: topic || '',
+        hasSummary: false,
+        summaryId: null
+      };
+      
+      const docRef = await addDoc(collection(db, 'documents'), newDoc);
+      const savedDocument = { id: docRef.id, ...newDoc };
+      
+      // Update local state
+      setDocuments(prev => [...prev, savedDocument]);
+      
+      return savedDocument;
     } catch (err) {
       console.error('Upload error:', err);
       setError(err.message || 'Failed to upload document');
@@ -666,7 +614,7 @@ export const DocumentProvider = ({ children }) => {
     currentDocument,
     currentFolder,
     setCurrentFolder,
-    // New summarization functions
+    // Summarization functions
     summarizing,
     summary,
     summaryError,

@@ -1,15 +1,14 @@
 import React from 'react';
 import styles from '../../styles/Documents/SummaryControls.module.css';
-import { ChevronDown, Save, Download, Copy, Share2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 const SummaryControls = ({ 
   summaryLength, 
   setSummaryLength, 
-  isGenerating, 
-  onRegenerate,
-  onSave,
-  onDownload,
-  onCopy
+  summaryFormat,
+  setSummaryFormat,
+  onRefresh,
+  isLoading
 }) => {
   return (
     <div className={styles.controlsContainer}>
@@ -20,7 +19,7 @@ const SummaryControls = ({
             id="summary-length" 
             value={summaryLength} 
             onChange={(e) => setSummaryLength(e.target.value)}
-            disabled={isGenerating}
+            disabled={isLoading}
             className={styles.select}
           >
             <option value="short">Short (1-2 paragraphs)</option>
@@ -31,11 +30,31 @@ const SummaryControls = ({
         </div>
       </div>
       
+      {summaryFormat && (
+        <div className={styles.formatSelector}>
+          <label htmlFor="summary-format" className={styles.label}>Format:</label>
+          <div className={styles.selectWrapper}>
+            <select 
+              id="summary-format" 
+              value={summaryFormat} 
+              onChange={(e) => setSummaryFormat(e.target.value)}
+              disabled={isLoading}
+              className={styles.select}
+            >
+              <option value="paragraphs">Paragraphs</option>
+              <option value="bullets">Bullet Points</option>
+              <option value="outline">Outline</option>
+            </select>
+            <ChevronDown className={styles.selectIcon} size={18} />
+          </div>
+        </div>
+      )}
+      
       <div className={styles.actionButtons}>
         <button 
           className={styles.actionButton} 
-          onClick={onRegenerate}
-          disabled={isGenerating}
+          onClick={onRefresh}
+          disabled={isLoading}
           aria-label="Regenerate summary"
           title="Regenerate summary"
         >
@@ -43,40 +62,8 @@ const SummaryControls = ({
             <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             <path d="M17 8C17 8 20 5 20 5C20 5 20 2 20 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          {isGenerating ? 'Generating...' : 'Regenerate'}
+          {isLoading ? 'Generating...' : 'Regenerate'}
         </button>
-        
-        <div className={styles.secondaryActions}>
-          <button 
-            className={styles.iconButton} 
-            onClick={onSave}
-            disabled={isGenerating}
-            aria-label="Save summary"
-            title="Save summary"
-          >
-            <Save size={18} />
-          </button>
-          
-          <button 
-            className={styles.iconButton} 
-            onClick={onDownload}
-            disabled={isGenerating}
-            aria-label="Download summary"
-            title="Download summary"
-          >
-            <Download size={18} />
-          </button>
-          
-          <button 
-            className={styles.iconButton} 
-            onClick={onCopy}
-            disabled={isGenerating}
-            aria-label="Copy to clipboard"
-            title="Copy to clipboard"
-          >
-            <Copy size={18} />
-          </button>
-        </div>
       </div>
     </div>
   );
