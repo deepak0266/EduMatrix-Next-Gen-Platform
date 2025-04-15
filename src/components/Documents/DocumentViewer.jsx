@@ -27,9 +27,13 @@ const DocumentViewer = () => {
   const [summaryFormat, setSummaryFormat] = useState('paragraphs');
   const [fullscreen, setFullscreen] = useState(false);
   const [documentLoaded, setDocumentLoaded] = useState(false);
+  const [textContent, setTextContent] = useState('');
+  const [pdfLoadError, setPdfLoadError] = useState(false);
 
   useEffect(() => {
     setDocumentLoaded(false);
+    setTextContent('');
+    setPdfLoadError(false);
   }, [documentId]);
 
   const loadDocument = useCallback(async () => {
@@ -46,6 +50,32 @@ const DocumentViewer = () => {
   useEffect(() => {
     loadDocument();
   }, [loadDocument]);
+
+  // Fetch text content for text files
+  useEffect(() => {
+    const fetchTextContent = async () => {
+      if (currentDocument?.fileURL && 
+          (currentDocument.fileType === 'text/plain' || 
+           currentDocument.fileName.toLowerCase().endsWith('.txt'))) {
+        try {
+          console.log("Fetching text content from:", currentDocument.fileURL);
+          const response = await fetch(currentDocument.fileURL);
+          if (!response.ok) {
+            throw new Error(`Error fetching text: ${response.status}`);
+          }
+          const text = await response.text();
+          setTextContent(text);
+        } catch (err) {
+          console.error("Failed to fetch text content:", err);
+          setTextContent("Error loading text content: " + err.message);
+        }
+      }
+    };
+    
+    if (currentDocument?.fileURL) {
+      fetchTextContent();
+    }
+  }, [currentDocument]);
 
   useEffect(() => {
     const timer = setInterval(() => setSessionTime(t => t + 1), 1000);
@@ -74,6 +104,7 @@ const DocumentViewer = () => {
   const formatTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 
   const handleBack = () => navigate('/documents');
+  
   const handleDownload = () => {
     if (currentDocument?.fileURL) {
       window.open(currentDocument.fileURL, '_blank');
@@ -86,9 +117,15 @@ const DocumentViewer = () => {
     setFullscreen(f => !f);
     const el = document.documentElement;
     if (!fullscreen) {
-      el.requestFullscreen?.() || el.webkitRequestFullscreen?.();
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+      else if (el.msRequestFullscreen) el.msRequestFullscreen();
     } else {
-      document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
     }
   };
 
@@ -106,10 +143,14 @@ const DocumentViewer = () => {
     }
   };
 
+  const handlePdfError = () => {
+    console.log("PDF failed to load");
+    setPdfLoadError(true);
+  };
+
   const handleGenerateQuiz = () => navigate(`/quiz/${documentId}`);
 
   const renderDocumentContent = () => {
-    console.log("📄 Checking fileURL:", currentDocument?.fileURL);
     if (!currentDocument?.fileURL) {
       return (
         <div className={styles.documentErrorContainer}>
@@ -120,15 +161,82 @@ const DocumentViewer = () => {
         </div>
       );
     }
-
-    return (
-      <iframe
-        src={`https://docs.google.com/gview?url=${encodeURIComponent(currentDocument.fileURL)}&embedded=true`}
-        title={currentDocument.fileName}
-        className={styles.pdfViewer}
-        loading="lazy"
-      />
-    );
+    
+    // Check if it's a PDF file
+    const isPDF = currentDocument.fileType === 'application/pdf' || 
+                  currentDocument.fileName.toLowerCase().endsWith('.pdf');
+    
+    if (isPDF) {
+      return (
+        <div className={styles.pdfContainer}>
+          {pdfLoadError ? (
+            <div className={styles.documentErrorContainer}>
+              <div className={styles.documentError}>
+                <h3>PDF Viewer Not Available</h3>
+                <p>The PDF could not be loaded in the embedded viewer.</p>
+                <p>Try using the download link below to view the document:</p>
+                <a 
+                  href={currentDocument.fileURL} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.primaryButton}
+                >
+                  Download PDF
+                </a>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Primary PDF viewer using iframe for better compatibility */}
+              <iframe
+                src={`${currentDocument.fileURL}#toolbar=0&navpanes=0`}
+                className={styles.pdfViewer}
+                title={currentDocument.fileName}
+                onError={handlePdfError}
+              />
+              
+              {/* Fallback PDF viewer using object tag */}
+              <object
+                data={currentDocument.fileURL}
+                type="application/pdf"
+                className={`${styles.pdfViewer} ${styles.fallbackPdfViewer}`}
+                onError={handlePdfError}
+              >
+                <div className={styles.documentErrorContainer}>
+                  <div className={styles.documentError}>
+                    <h3>PDF Viewer Not Available</h3>
+                    <p>Your browser doesn't support PDF viewing or the PDF could not be loaded.</p>
+                    <p>Try the direct download link below:</p>
+                    <a 
+                      href={currentDocument.fileURL} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.primaryButton}
+                    >
+                      Download PDF
+                    </a>
+                  </div>
+                </div>
+              </object>
+            </>
+          )}
+        </div>
+      );
+    } else {
+      // For text files, display the fetched content
+      return (
+        <div className={styles.textContainer}>
+          {textContent ? (
+            <pre className={styles.textContent}>{textContent}</pre>
+          ) : (
+            <div className={styles.loadingIndicator}>
+              <div className={styles.spinner}></div>
+              <p>Loading text content...</p>
+            </div>
+          )}
+        </div>
+      );
+    }
   };
 
   const renderSummaryContent = () => (
