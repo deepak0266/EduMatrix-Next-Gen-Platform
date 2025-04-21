@@ -3,7 +3,6 @@ import axios from 'axios';
 import styles from '../../styles/InterviewPreparation/InterviewPreparation.module.css';
 
 const InterviewPreparation = () => {
-  // States
   const [currentScreen, setCurrentScreen] = useState('welcome'); // welcome, interview, result
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedTech, setSelectedTech] = useState('');
