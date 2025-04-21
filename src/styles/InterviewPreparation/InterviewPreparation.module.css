@@ -1,0 +1,244 @@
+/* Base styles */
+.container {
+    min-height: 100vh;
+    padding: 2rem;
+    color: #ffffff;
+    background-color: #1a1a1a;
+  }
+  
+  .welcomeScreen,
+  .interviewScreen,
+  .resultScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80vh;
+  }
+  
+  /* Welcome Screen Styles */
+  .welcomeTitle {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #00ff88;
+  }
+  
+  .roleGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+  }
+  
+  .roleCard {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .roleCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+  }
+  
+  /* Style for selected role cards */
+  .roleCard.selected {
+    border: 2px solid #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+  }
+  
+  .techSelect {
+    margin: 2rem 0;
+  }
+  
+  .settingsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  
+  .settingsContainer select,
+  .settingsContainer input,
+  .techSelect select {
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #00ff88;
+    color: #ffffff;
+    border-radius: 5px;
+  }
+  
+  /* Button Styles */
+  .button {
+    padding: 0.8rem 2rem;
+    background: #00ff88;
+    border: none;
+    border-radius: 5px;
+    color: #1a1a1a;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.3s;
+    margin-top: 1rem;
+  }
+  
+  .button:hover {
+    transform: scale(1.05);
+  }
+  
+  .button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .quitButton {
+    background: #ff4444;
+  }
+  
+  .recordingButton {
+    background: #ff4444;
+  }
+  
+  /* Interview Screen Styles */
+  .botContainer {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 2rem auto;
+  }
+  
+  .botAnimation {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #00ff88 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(0.95);
+      opacity: 0.5;
+    }
+  }
+  
+  .controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+  }
+  
+  /* Camera Container Styles */
+  .cameraContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 150px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ff88;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  }
+  
+  .camera {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Timer Display */
+  .timerDisplay {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    color: #00ff88;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 5;
+  }
+  
+  /* Question Container */
+  .questionContainer {
+    text-align: center;
+    margin: 1rem auto;
+    max-width: 80%;
+  }
+  
+  .transcriptionText {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-top: 1rem;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  /* Result Screen Styles */
+  .feedbackContainer {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  
+  .feedbackItem {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  
+  /* Loading Overlay */
+  .loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    color: #00ff88;
+    font-size: 1.5rem;
+    z-index: 1000;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .cameraContainer {
+      width: 120px;
+      height: 80px;
+      top: 10px;
+      right: 10px;
+    }
+    
+    .questionContainer {
+      max-width: 95%;
+    }
+    
+    .roleGrid {
+      grid-template-columns: 1fr;
+    }
+  }

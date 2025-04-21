@@ -1,88 +1,219 @@
+/* SplitViewContainer.module.css */
+
 .splitViewContainer {
   display: flex;
-  flex-direction: column;
-  height: 100%;
   width: 100%;
-  background-color: #f9f9f9;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.02);
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.controls {
-  padding: 12px 16px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e1e1e1;
-}
-
-.splitViewContent {
+/* Panel Styles */
+.splitPanel {
+  height: 100%;
   display: flex;
-  flex: 1;
+  flex-direction: column;
+  position: relative;
   overflow: hidden;
-  position: relative;
+  transition: width 0.3s ease;
 }
 
-.documentPanel, .summaryPanel {
-  height: 100%;
-  overflow-y: auto;
-  padding: 16px;
-  position: relative;
+.animatedPanel {
+  transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.documentPanel {
-  background-color: #ffffff;
+.leftPanel {
   border-right: none;
+  background-color: rgba(255, 255, 255, 0.01);
 }
 
-.summaryPanel {
-  background-color: #f0f7ff;
+.rightPanel {
+  border-left: none;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
-.divider {
-  width: 6px;
-  height: 100%;
-  background-color: #e1e1e1;
-  cursor: col-resize;
-  transition: background-color 0.2s;
+/* Panel Layout */
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  height: 48px;
+}
+
+.panelHeader h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.panelControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.panelContent {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 0;
   position: relative;
 }
 
-.divider:hover {
-  background-color: #3498db;
+.panelFooter {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.divider::after {
-  content: '';
+/* Divider Styles */
+.splitDivider {
+  position: relative;
+  width: 14px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+.splitDivider:hover, .activeDivider {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dividerHandleContainer {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dividerHandle {
   position: absolute;
+  height: 80px;
+  width: 6px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.splitDivider:hover .dividerHandle,
+.activeDivider .dividerHandle {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scaleY(1.1);
+}
+
+.gripDots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gripDots span {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Preset controls */
+.presetControls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 15;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.splitDivider:hover .presetControls {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Ratio Hint Tooltip */
+.ratioHint {
+  position: absolute;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 40px;
-  background-color: #f1f1f1;
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.2s;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.divider:hover::after {
-  opacity: 0.8;
-}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .splitViewContainer {
+    flex-direction: column;
+    height: auto;
+  }
 
-.panelTitle {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e1e1e1;
-}
+  .splitPanel {
+    width: 100% !important;
+    height: 50vh;
+  }
 
-.actions {
-  padding: 12px 16px;
-  background-color: #ffffff;
-  border-top: 1px solid #e1e1e1;
-  display: flex;
-  justify-content: flex-end;
+  .splitDivider {
+    width: 100%;
+    height: 14px;
+    cursor: row-resize;
+  }
+
+  .dividerHandle {
+    width: 80px;
+    height: 6px;
+  }
+
+  .gripDots {
+    flex-direction: row;
+    gap: 3px;
+  }
+
+  .ratioHint {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+  }
+
+  .presetControls {
+    flex-direction: row;
+    bottom: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
