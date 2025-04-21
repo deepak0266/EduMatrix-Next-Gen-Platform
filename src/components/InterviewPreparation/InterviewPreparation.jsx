@@ -26,8 +26,7 @@ const InterviewPreparation = () => {
   const streamRef = useRef(null);
 
   // API key - in a real application, this should be in environment variables
-  const OPENAI_API_KEY = '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';
-  
+  const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
   // HR question to start with
   const hrQuestion = "Tell me about yourself, what's your expertise and skills?";
 
