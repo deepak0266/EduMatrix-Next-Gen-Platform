@@ -152,26 +152,6 @@ const Dashboard = () => {
       {/* Main Grid Layout */}
       <div className={styles.mainGrid}>
         {/* Recent Activities Section */}
-        <section className={styles.recentActivities}>
-          <h2 className={styles.sectionTitle}>Recent Activities</h2>
-          <div className={styles.activitiesList}>
-            {recentActivities.length > 0 ? (
-              recentActivities.map((activity) => (
-                <div key={activity.id} className={styles.activityItem}>
-                  <div className={styles.activityIcon}>
-                    {getActivityIcon(activity.type)}
-                  </div>
-                  <div className={styles.activityContent}>
-                    <p className={styles.activityTitle}>{activity.title}</p>
-                    <p className={styles.activityDate}>{activity.date}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className={styles.noActivities}>No recent activities</p>
-            )}
-          </div>
-        </section>
 
         {/* Quick Access Section */}
         <section className={styles.quickAccess}>

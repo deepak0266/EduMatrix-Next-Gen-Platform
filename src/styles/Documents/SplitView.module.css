@@ -32,12 +32,14 @@
   border-right: none;
   background-color: rgba(255, 255, 255, 0.01);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s; /* Smooth transition */
 }
 
 .rightPanel {
   border-left: none;
   background-color: rgba(255, 255, 255, 0.03);
   box-shadow: inset 4px 0 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s; /* Smooth transition */
 }
 
 /* Panel Layout */

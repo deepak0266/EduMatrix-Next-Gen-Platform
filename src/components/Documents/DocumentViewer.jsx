@@ -4,16 +4,12 @@ import { useDocuments } from '../../contexts/DocumentContext';
 import {
   ArrowLeft,
   Download,
-  Printer,
   Maximize,
   Minimize,
   Clock,
   X,
   FileText,
   ChevronDown,
-  Copy,
-  RefreshCw,
-  Languages,
   Volume2,
   Search,
   Bookmark,
@@ -24,7 +20,6 @@ import {
   PanelLeft,
   PanelRight,
   Layout,
-  RotateCcw,
   AlertCircle
 } from 'lucide-react';
 import SplitViewContainer from './SplitViewContainer';
@@ -71,8 +66,6 @@ const DocumentViewer = () => {
   const [preferredSplitRatio, setPreferredSplitRatio] = useState(50); // Default 50:50
   const [darkMode, setDarkMode] = useState(false);
 
-
-
   // Initialize modal and event listeners
   useEffect(() => {
     setDocumentLoaded(false);
@@ -116,6 +109,16 @@ const DocumentViewer = () => {
     };
   }, [documentId, fullscreen, leftPanelFullscreen, rightPanelFullscreen]);
 
+  const handleDownload = () => {
+    if (currentDocument?.fileURL) {
+      const link = document.createElement('a');
+      link.href = currentDocument.fileURL;
+      link.download = currentDocument.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
   // Load document from context
   const loadDocument = useCallback(async () => {
     if (!loading && !documentLoaded) {
@@ -127,7 +130,7 @@ const DocumentViewer = () => {
         if (currentDocument?.fileType === 'application/pdf') {
           // This would be implemented to actually detect number of pages
           // For now, setting a placeholder value
-          setTotalPages(5);
+          setTotalPages(1);
         }
       } catch (err) {
         console.error("Failed to load document:", err);
@@ -180,41 +183,68 @@ const DocumentViewer = () => {
 
   // Handle summary generation
   const handleSummarize = useCallback(async () => {
-    setViewMode('split');
-    setSummaryTimerActive(true);
+    try {
+      setViewMode('split');
+      setSummaryTimerActive(true);
 
-    if (!summary) {
-      await summarizeDocument(documentId, summaryLength, summaryFormat);
-    } else {
-      await getSummary(documentId);
+      // If we don't have an existing summary, generate one
+      if (!summary) {
+        await summarizeDocument(
+          documentId,
+          currentDocument?.content || textContent,
+          currentDocument?.fileURL,
+          summaryLength,
+          summaryFormat
+        );
+      } else {
+        // If we have an existing summary, just fetch it
+        await getSummary(documentId);
+      }
+    } catch (error) {
+      console.error("Summary generation failed:", error);
     }
-  }, [summary, documentId, summaryLength, summaryFormat, summarizeDocument, getSummary]);
+  }, [documentId, currentDocument, textContent, summary, summaryLength, summaryFormat, summarizeDocument, getSummary]);
 
   // Update summary when preferences change
-  useEffect(() => {
-    if (viewMode === 'split' && summary && documentLoaded) {
-      summarizeDocument(documentId, summaryLength, summaryFormat);
-    }
-  }, [summaryLength, summaryFormat, viewMode, summary, documentId, summarizeDocument, documentLoaded]);
-
+useEffect(() => {
+  if (viewMode === 'split' && documentLoaded) {
+    summarizeDocument(
+      documentId,
+      currentDocument?.content || textContent,
+      currentDocument?.fileURL,
+      summaryLength,
+      summaryFormat
+    );
+  }
+}, [summaryLength, summaryFormat, viewMode]); // Removed unnecessary dependencies
   // Helper functions
   const formatTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 
   // Take screenshot function
-  const takeScreenshot = (elementRef, fileName) => {
-    if (!elementRef.current) return;
+const takeScreenshot = async () => {
+  try {
+    const html2canvas = (await import('html2canvas')).default;
+    
+    const canvas = await html2canvas(document.documentElement, {
+      useCORS: true,
+      scrollX: -window.scrollX,
+      scrollY: -window.scrollY,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
+      scale: 1
+    });
 
-    // In a real implementation, you would use html2canvas or a similar library
-    alert(`Screenshot captured of ${fileName} and saved to downloads`);
+    // डाउनलोड करें
+    const link = document.createElement('a');
+    link.download = `full-website-screenshot-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
 
-    // Example with html2canvas would be:
-    // html2canvas(elementRef.current).then(canvas => {
-    //   const link = document.createElement('a');
-    //   link.download = `${fileName}-screenshot.png`;
-    //   link.href = canvas.toDataURL('image/png');
-    //   link.click();
-    // });
-  };
+  } catch (error) {
+    alert('स्क्रीनशॉट फ़ेल हुआ! ब्राउज़र कंसोल चेक करें।');
+    console.error("स्क्रीनशॉट एरर:", error);
+  }
+};
 
   // Navigation and control handlers
   const handleBack = () => navigate('/documents');
@@ -232,46 +262,8 @@ const DocumentViewer = () => {
     setSummaryTimerActive(false);
   };
 
-  const handleDownload = () => {
-    if (currentDocument?.fileURL) {
-      const link = document.createElement('a');
-      link.href = currentDocument.fileURL;
-      link.download = currentDocument.fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  
 
-  const handlePrint = () => {
-    const printContents = documentRef.current?.innerHTML;
-    const originalContents = document.body.innerHTML;
-
-    if (printContents) {
-      document.body.innerHTML = `
-        <html>
-          <head>
-            <title>Print: ${currentDocument?.fileName}</title>
-            <style>
-              body { font-family: Arial, sans-serif; }
-              .print-header { margin-bottom: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="print-header">
-              <h1>${currentDocument?.fileName}</h1>
-              <p>Printed on ${new Date().toLocaleDateString()}</p>
-            </div>
-            ${printContents}
-          </body>
-        </html>
-      `;
-      window.print();
-      document.body.innerHTML = originalContents;
-    } else {
-      window.print();
-    }
-  };
 
   const toggleFullscreen = () => {
     setFullscreen(prev => !prev);
@@ -300,49 +292,15 @@ const DocumentViewer = () => {
   };
 
   const toggleLeftPanelFullscreen = () => {
-    // First close right panel fullscreen if it's active
-    if (rightPanelFullscreen) {
-      setRightPanelFullscreen(false);
-    }
-    
-    // Toggle left panel fullscreen
     setLeftPanelFullscreen(prev => !prev);
-    
-    // Make sure full screen mode is off
-    if (fullscreen) {
-      setFullscreen(false);
-      // Exit browser fullscreen if needed
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
+    setRightPanelFullscreen(false); // 
+    setFullscreen(false); //
   };
   
   const toggleRightPanelFullscreen = () => {
-    // First close left panel fullscreen if it's active
-    if (leftPanelFullscreen) {
-      setLeftPanelFullscreen(false);
-    }
-    
-    // Toggle right panel fullscreen
     setRightPanelFullscreen(prev => !prev);
-    
-    // Make sure full screen mode is off
-    if (fullscreen) {
-      setFullscreen(false);
-      // Exit browser fullscreen if needed
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
+    setLeftPanelFullscreen(false); // 
+    setFullscreen(false); // 
   };
 
   const toggleDarkMode = () => {
@@ -370,27 +328,38 @@ const DocumentViewer = () => {
 
   // Summary functionality
   const handleCopySummary = () => {
-    if (summary) {
-      navigator.clipboard.writeText(summary)
+    if (summary?.content) { // ✅ .content check करें
+      navigator.clipboard.writeText(summary.content)
         .then(() => {
           setIsSummaryCopied(true);
           setTimeout(() => setIsSummaryCopied(false), 2000);
         })
         .catch(err => {
-          console.error('Failed to copy summary: ', err);
+          console.error('Failed to copy: ', err);
         });
     }
   };
 
   const handleRefreshSummary = async () => {
-    await summarizeDocument(documentId, summaryLength, summaryFormat, true);
+    try {
+      await summarizeDocument(
+        documentId,
+        currentDocument?.content || textContent,
+        currentDocument?.fileURL,
+        summaryLength,
+        summaryFormat,
+        true // force refresh
+      );
+    } catch (error) {
+      console.error("Failed to refresh summary:", error);
+    }
   };
 
   const handleDownloadSummary = () => {
-    if (!summary) return;
-
+    if (!summary?.content) return; // ✅ .content check करें
+  
     const element = document.createElement('a');
-    const file = new Blob([summary], { type: 'text/plain' });
+    const file = new Blob([summary.content], { type: 'text/plain' }); // ✅ .content use करें
     element.href = URL.createObjectURL(file);
     element.download = `${currentDocument?.fileName.split('.')[0]}_summary.txt`;
     document.body.appendChild(element);
@@ -398,33 +367,7 @@ const DocumentViewer = () => {
     document.body.removeChild(element);
   };
 
-  const handlePrintSummary = () => {
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Summary of ${currentDocument?.fileName}</title>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
-            h1 { color: #4a6cf7; }
-            .meta { color: #555; margin-bottom: 20px; }
-            .content { white-space: pre-wrap; }
-          </style>
-        </head>
-        <body>
-          <h1>Summary of ${currentDocument?.fileName}</h1>
-          <div class="meta">
-            Generated on ${new Date().toLocaleDateString()} | Length: ${summaryLength}
-          </div>
-          <div class="content">${summary}</div>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
+  
 
   const handleGenerateQuiz = () => {
     // This would be implemented to generate a quiz based on the summary
@@ -666,12 +609,11 @@ const DocumentViewer = () => {
           </div>
 
           {/* Main Split View Container */}
-          {/* Main Split View Container */}
           <SplitViewContainer
             leftContent={renderDocumentContent()}
             rightContent={
               <SummaryViewer
-                documentContent={currentDocument?.content}
+                documentContent={currentDocument?.content || textContent}
                 documentId={documentId}
                 summary={summary}
                 loading={summarizing}
@@ -683,7 +625,6 @@ const DocumentViewer = () => {
                 onCopy={handleCopySummary}
                 onRefresh={handleRefreshSummary}
                 onDownload={handleDownloadSummary}
-                onPrint={handlePrintSummary}
                 isCopied={isSummaryCopied}
               />
             }
@@ -697,13 +638,6 @@ const DocumentViewer = () => {
                   aria-label="Take screenshot of document"
                 >
                   <Camera size={16} />
-                </button>
-                <button
-                  className={styles.panelControlButton}
-                  onClick={handlePrint}
-                  aria-label="Print document"
-                >
-                  <Printer size={16} />
                 </button>
                 <button
                   className={styles.panelControlButton}
@@ -722,13 +656,6 @@ const DocumentViewer = () => {
                   aria-label="Download summary"
                 >
                   <Download size={16} />
-                </button>
-                <button
-                  className={styles.panelControlButton}
-                  onClick={handlePrintSummary}
-                  aria-label="Print summary"
-                >
-                  <Printer size={16} />
                 </button>
                 <button
                   className={styles.panelControlButton}
@@ -888,16 +815,9 @@ const DocumentViewer = () => {
               onClick={handleDownload}
               aria-label="Download document"
             >
+              
               <Download size={18} />
               <span className={styles.controlLabel}>Download</span>
-            </button>
-            <button
-              className={styles.controlButton}
-              onClick={handlePrint}
-              aria-label="Print document"
-            >
-              <Printer size={18} />
-              <span className={styles.controlLabel}>Print</span>
             </button>
             <button
               className={styles.controlButton}
