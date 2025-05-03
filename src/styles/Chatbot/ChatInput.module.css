@@ -1,0 +1,116 @@
+/* src/components/Chatbot/ChatInput.module.css */
+.inputContainer {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 24px;
+    background-color: white;
+    margin: 0 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .studyInput {
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+  
+  .studyInput:focus-within {
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+  }
+  
+  .gameInput {
+    background-color: #2d2d3a;
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.2);
+  }
+  
+  .gameInput:focus-within {
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.5);
+  }
+  
+  .musicInput {
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+  }
+  
+  .musicInput:focus-within {
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.5);
+  }
+  
+  .chatInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 24px;
+    background: transparent;
+  }
+  
+  .gameInput .chatInput {
+    color: white;
+  }
+  
+  .gameInput .chatInput::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .sendButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .studyInput .sendButton {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .studyInput .sendButton:hover {
+    background-color: #2980b9;
+  }
+  
+  .gameInput .sendButton {
+    background-color: #ff5252;
+    color: white;
+  }
+  
+  .gameInput .sendButton:hover {
+    background-color: #c62828;
+  }
+  
+  .musicInput .sendButton {
+    background-color: #9c27b0;
+    color: white;
+  }
+  
+  .musicInput .sendButton:hover {
+    background-color: #7b1fa2;
+  }
+  
+  .sendButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .sendIcon {
+    font-size: 14px;
+  }
+  
+  /* Loading state */
+  .loadingSpinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  

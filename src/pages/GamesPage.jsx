@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Clock, Trophy, Brain, Heart, Filter, Search } from 'lucide-react';
+import { useChatbot } from '../contexts/ChatbotContext';
 import styles from '../styles/Pages/GamesPage.module.css';
 
-const GamePage = () => {
+const GamesPage = () => {
   const [games, setGames] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGame, setSelectedGame] = useState(null);
+  const { switchMode } = useChatbot();
 
   useEffect(() => {
-    // Simulate fetching games and categories
+    switchMode('game');
+  }, [switchMode]);
+
+  useEffect(() => {
     setTimeout(() => {
       setGames([
         { id: 1, title: 'Code Puzzle', description: 'Solve coding challenges', category: 'coding' },
@@ -100,7 +105,6 @@ const GamePage = () => {
           ))}
         </div>
 
-        {/* Game Interface Section */}
         {selectedGame ? (
           <div className={styles.selectedGameSection}>
             {renderGameInterface()}
@@ -119,4 +123,4 @@ const GamePage = () => {
   );
 };
 
-export default GamePage;
+export default GamesPage;

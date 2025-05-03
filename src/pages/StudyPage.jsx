@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import styles from '../styles/Study/StudyPage.module.css';
+import { useChatbot } from '../contexts/ChatbotContext';
 import ToolsGrid from '../components/Tools/ToolsGrid';
 import PdfConverter from '../components/Tools/PdfConverter';
 import Dictionary from '../components/Tools/Dictionary';
@@ -13,60 +13,49 @@ import UnitConverter from '../components/Tools/UnitConverter';
 import MarkdownEditor from '../components/Tools/MarkdownEditor';
 import VoiceNotes from '../components/Tools/VoiceNotes';
 import FlashcardMaker from '../components/Tools/FlashcardMaker';
+import styles from '../styles/Study/StudyPage.module.css';
 
 const StudyPage = () => {
   const [selectedTool, setSelectedTool] = useState(null);
   const [toolVisible, setToolVisible] = useState(false);
-  
+  const { switchMode } = useChatbot();
+
+  useEffect(() => {
+    switchMode('study');
+  }, [switchMode]);
+
   const handleToolSelect = (toolName) => {
-    // Add fade-out effect before changing tool
     if (selectedTool) {
       setToolVisible(false);
-      
-      // Wait for animation to complete before changing tool
       setTimeout(() => {
         setSelectedTool(toolName);
-        // Trigger fade-in for the new tool
         setTimeout(() => setToolVisible(true), 50);
       }, 300);
     } else {
       setSelectedTool(toolName);
-      // Trigger fade-in for the first tool selection
       setTimeout(() => setToolVisible(true), 50);
     }
   };
   
   const renderSelectedTool = () => {
     switch(selectedTool) {
-      case 'text-to-pdf':
-        return <PdfConverter />;
-      case 'dictionary':
-        return <Dictionary />;
-      case 'mcq-quiz':
-        return <QuizGenerator />;
-      case 'flashcards':
-        return <Flashcards />;
-      case 'pomodoro-timer':
-        return <PomodoroTimer />;
-      case 'sticky-notes':
-        return <StickyNotes />;
-      case 'math-solver':
-        return <MathSolver />;
-      case 'unit-converter':
-        return <UnitConverter />;
-      case 'markdown-editor':
-        return <MarkdownEditor />;
-      case 'voice-notes':
-        return <VoiceNotes />;
-      case 'flashcard-generator':
-        return <FlashcardMaker />;
-      default:
-        return (
-          <div className={styles.toolPlaceholder}>
-            <h3>Select a tool from above to get started</h3>
-            <p>Choose from our collection of productivity and study tools to enhance your learning experience.</p>
-          </div>
-        );
+      case 'text-to-pdf': return <PdfConverter />;
+      case 'dictionary': return <Dictionary />;
+      case 'mcq-quiz': return <QuizGenerator />;
+      case 'flashcards': return <Flashcards />;
+      case 'pomodoro-timer': return <PomodoroTimer />;
+      case 'sticky-notes': return <StickyNotes />;
+      case 'math-solver': return <MathSolver />;
+      case 'unit-converter': return <UnitConverter />;
+      case 'markdown-editor': return <MarkdownEditor />;
+      case 'voice-notes': return <VoiceNotes />;
+      case 'flashcard-generator': return <FlashcardMaker />;
+      default: return (
+        <div className={styles.toolPlaceholder}>
+          <h3>Select a tool from above to get started</h3>
+          <p>Choose from our collection of productivity and study tools.</p>
+        </div>
+      );
     }
   };
   
@@ -75,7 +64,6 @@ const StudyPage = () => {
       <h1 className={styles.pageTitle}>Study Interface</h1>
       
       <div className={styles.studySections}>
-        {/* Section 1: Document Management System */}
         <div className={styles.studySection}>
           <div className={styles.sectionHeader}>
             <h2>Document Management</h2>
@@ -99,7 +87,6 @@ const StudyPage = () => {
           </Link>
         </div>
         
-        {/* Section 2: AI Interview Preparation */}
         <div className={styles.studySection}>
           <div className={styles.sectionHeader}>
             <h2>AI Interview Preparation</h2>
@@ -116,14 +103,13 @@ const StudyPage = () => {
               </div>
               <div className={styles.sectionContent}>
                 <h3>Interview Assistant</h3>
-                <p>Get role-specific questions, practice with speech recognition, and receive instant feedback</p>
+                <p>Get role-specific questions, practice with speech recognition</p>
                 <button className={styles.sectionButton}>Start Practice</button>
               </div>
             </div>
           </Link>
         </div>
         
-        {/* Section 3: Useful Tools */}
         <div className={styles.studySection}>
           <div className={styles.sectionHeader}>
             <h2>Useful Tools</h2>
@@ -131,7 +117,6 @@ const StudyPage = () => {
           </div>
           <div className={styles.toolsContainer}>
             <ToolsGrid onSelectTool={handleToolSelect} selectedTool={selectedTool} />
-            
             <div className={`${styles.toolDisplay} ${toolVisible ? styles.toolVisible : ''}`}>
               {renderSelectedTool()}
             </div>

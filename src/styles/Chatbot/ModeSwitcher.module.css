@@ -1,0 +1,80 @@
+/* src/components/Chatbot/ModeSwitcher.module.css */
+.modeSwitcherContainer {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .modeButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .modeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .modeButton::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    transition: width 0.3s ease;
+  }
+  
+  .modeIcon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  
+  .modeLabel {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Active mode styles */
+  .activeMode {
+    font-weight: 600;
+  }
+  
+  .activeMode::after {
+    width: 70%;
+  }
+  
+  /* Mode-specific styles */
+  .modeButton:nth-child(1)::after {
+    background-color: #3498db;
+  }
+  
+  .modeButton:nth-child(2)::after {
+    background-color: #ff5252;
+  }
+  
+  .modeButton:nth-child(3)::after {
+    background-color: #9c27b0;
+  }
+  
+  /* Animation for mode transition */
+  @keyframes activateMode {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .activeMode .modeIcon {
+    animation: activateMode 0.3s ease;
+  }

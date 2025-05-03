@@ -1,0 +1,53 @@
+/* src/components/Chatbot/SuggestionChips.module.css */
+.suggestionsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .suggestionChip {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Study mode suggestion chips */
+  .studySuggestions .suggestionChip {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+  }
+  
+  .studySuggestions .suggestionChip:hover {
+    background-color: rgba(52, 152, 219, 0.2);
+  }
+  
+  /* Game mode suggestion chips */
+  .gameSuggestions .suggestionChip {
+    background-color: rgba(255, 82, 82, 0.1);
+    color: #ff5252;
+    border: 1px solid rgba(255, 82, 82, 0.3);
+  }
+  
+  .gameSuggestions .suggestionChip:hover {
+    background-color: rgba(255, 82, 82, 0.2);
+  }
+  
+  /* Music mode suggestion chips */
+  .musicSuggestions .suggestionChip {
+    background-color: rgba(156, 39, 176, 0.1);
+    color: #9c27b0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+  }
+  
+  .musicSuggestions .suggestionChip:hover {
+    background-color: rgba(156, 39, 176, 0.2);
+  }
