@@ -9,14 +9,20 @@ export const ChatbotProvider = ({ children }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentMode, setCurrentMode] = useState('study'); // 'study', 'game', or 'music'
-  
-  // Initialize with welcome message based on current mode
+  const [currentMode, setCurrentMode] = useState('study');
+  const [isChatbotVisible, setIsChatbotVisible] = useState(false);
+
+  // Initialize with welcome message
   useEffect(() => {
     const welcomeMessage = generateWelcomeMessage(currentMode);
     setMessages([{ type: 'bot', content: welcomeMessage, mode: currentMode }]);
   }, [currentMode]);
-  
+
+  // Toggle chatbot visibility
+  const toggleChatbot = (visible) => {
+    setIsChatbotVisible(visible !== undefined ? visible : !isChatbotVisible);
+  };
+
   const generateWelcomeMessage = (mode) => {
     switch(mode) {
       case 'study':
@@ -196,6 +202,8 @@ export const ChatbotProvider = ({ children }) => {
       messages,
       isLoading,
       currentMode,
+      isChatbotVisible,
+      toggleChatbot,
       sendMessage,
       switchMode,
       clearChat
@@ -205,4 +213,10 @@ export const ChatbotProvider = ({ children }) => {
   );
 };
 
-export const useChatbot = () => useContext(ChatbotContext);
+export const useChatbot = () => {
+  const context = useContext(ChatbotContext);
+  if (!context) {
+    throw new Error('useChatbot must be used within a ChatbotProvider');
+  }
+  return context;
+};

@@ -1,0 +1,75 @@
+/* MusicRecommendations.module.css */
+
+.recommendationsContainer {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+  }
+  
+  .recommendationsTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+  
+  .recommendationsDescription {
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+  
+  .moodOptionsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .moodOption {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .moodOption:hover {
+    background-color: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .moodLabel {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+  
+  .moodDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+  
+  .viewAllLink {
+    display: inline-block;
+    color: #3b82f6;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 0.5rem;
+    transition: color 0.2s ease;
+  }
+  
+  .viewAllLink:hover {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 768px) {
+    .moodOptionsList {
+      grid-template-columns: 1fr;
+    }
+  }

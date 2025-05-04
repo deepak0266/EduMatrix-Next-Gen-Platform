@@ -33,20 +33,20 @@ const ToolsGrid = ({ onSelectTool, selectedTool }) => {
       color: '#3366FF',
       description: 'Convert your text notes to PDF format'
     },
-    { 
-      id: 'mcq-quiz', 
-      name: 'Quiz Generator', 
-      icon: <FileQuestion />, 
-      color: '#00C48C',
-      description: 'Create multiple-choice quizzes from your materials'
-    },
-    { 
-      id: 'flashcards', 
-      name: 'Flashcards', 
-      icon: <Bookmark />,
-      color: '#45b7d1',
-      description: 'Study with digital flashcards'
-    },
+    // { 
+    //   id: 'mcq-quiz', 
+    //   name: 'Quiz Generator', 
+    //   icon: <FileQuestion />, 
+    //   color: '#00C48C',
+    //   description: 'Create multiple-choice quizzes from your materials'
+    // },
+    // { 
+    //   id: 'flashcards', 
+    //   name: 'Flashcards', 
+    //   icon: <Bookmark />,
+    //   color: '#45b7d1',
+    //   description: 'Study with digital flashcards'
+    // },
     { 
       id: 'pomodoro-timer', 
       name: 'Pomodoro Timer', 
@@ -54,13 +54,13 @@ const ToolsGrid = ({ onSelectTool, selectedTool }) => {
       color: '#FF7A50',
       description: 'Focus with timed study sessions'
     },
-    { 
-      id: 'sticky-notes', 
-      name: 'Sticky Notes', 
-      icon: <StickyNote />, 
-      color: '#FFD43B',
-      description: 'Create digital sticky notes for reminders'
-    },
+    // { 
+    //   id: 'sticky-notes', 
+    //   name: 'Sticky Notes', 
+    //   icon: <StickyNote />, 
+    //   color: '#FFD43B',
+    //   description: 'Create digital sticky notes for reminders'
+    // },
     { 
       id: 'math-solver', 
       name: 'Math Solver', 
@@ -82,13 +82,13 @@ const ToolsGrid = ({ onSelectTool, selectedTool }) => {
       color: '#00B894',
       description: 'Look up definitions of words and terms'
     },
-    { 
-      id: 'markdown-editor', 
-      name: 'Markdown Editor', 
-      icon: <Edit3 />, 
-      color: '#9C67FF',
-      description: 'Create and edit formatted text with Markdown'
-    },
+    // { 
+    //   id: 'markdown-editor', 
+    //   name: 'Markdown Editor', 
+    //   icon: <Edit3 />, 
+    //   color: '#9C67FF',
+    //   description: 'Create and edit formatted text with Markdown'
+    // },
     { 
       id: 'voice-notes', 
       name: 'Voice Notes', 
@@ -96,13 +96,13 @@ const ToolsGrid = ({ onSelectTool, selectedTool }) => {
       color: '#E84393',
       description: 'Record and transcribe voice notes'
     },
-    { 
-      id: 'flashcard-generator', 
-      name: 'Flashcard Maker', 
-      icon: <Layout />, 
-      color: '#0984E3',
-      description: 'Create custom flashcards from your notes'
-    },
+    // { 
+    //   id: 'flashcard-generator', 
+    //   name: 'Flashcard Maker', 
+    //   icon: <Layout />, 
+    //   color: '#0984E3',
+    //   description: 'Create custom flashcards from your notes'
+    // },
   ];
 
   return (
