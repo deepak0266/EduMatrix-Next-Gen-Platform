@@ -73,7 +73,7 @@ const StudyPage = () => {
             <div className={styles.sectionCard}>
               <div className={styles.sectionIconContainer}>
                 <img 
-                  src="https://fonts.gstatic.com/s/i/materialiconsoutlined/folder/v1/24px.svg" 
+                  src="/assets/images/document.png" 
                   alt="Documents" 
                   className={styles.sectionIcon} 
                 />
@@ -96,7 +96,7 @@ const StudyPage = () => {
             <div className={styles.sectionCard}>
               <div className={styles.sectionIconContainer}>
                 <img 
-                  src="https://fonts.gstatic.com/s/i/materialiconsoutlined/mic/v1/24px.svg" 
+                  src="/assets/images/interview.png" 
                   alt="Interview" 
                   className={styles.sectionIcon} 
                 />

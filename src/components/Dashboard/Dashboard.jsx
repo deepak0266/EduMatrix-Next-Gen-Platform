@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, Calendar, Music, Gamepad, FileText, Video, User, Settings, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import styles from '../../styles/Dashboard/Dashboard.module.css'; // Import CSS module
+import interviews from '../../pages/InterviewPage'; 
 
 
 const Dashboard = () => {
@@ -23,12 +24,12 @@ const Dashboard = () => {
     const fetchDashboardData = () => {
       setTimeout(() => {
         setStats({
-          totalInterviews: 12,
+          totalInterviews: 1,
           completedInterviews: 8,
           upcomingInterviews: 4,
-          musicTracks: 143,
-          documents: 27,
-          games: 5,
+          musicTracks: 2,
+          documents: 1,
+          games: 6,
         });
 
         setRecentActivities([
@@ -52,20 +53,6 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const getActivityIcon = (type) => {
-    switch (type) {
-      case 'interview':
-        return <Video className="text-purple-500" size={18} />;
-      case 'document':
-        return <FileText className="text-blue-500" size={18} />;
-      case 'music':
-        return <Music className="text-green-500" size={18} />;
-      case 'game':
-        return <Gamepad className="text-orange-500" size={18} />;
-      default:
-        return <Calendar className="text-gray-500" size={18} />;
-    }
-  };
 
   const StatCard = ({ icon, title, value, bgColor }) => (
     <div className={`${styles.statCard} ${styles[bgColor]}`}>
@@ -108,17 +95,6 @@ const Dashboard = () => {
     <div className={styles.dashboard}>
       {/* Header Section */}
       <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.headerTitle}>Dashboard</h1>
-          <div className={styles.notificationIcon}>
-            <Bell size={24} className={styles.bellIcon} />
-            {notifications.filter((n) => !n.read).length > 0 && (
-              <span className={styles.notificationBadge}>
-                {notifications.filter((n) => !n.read).length}
-              </span>
-            )}
-          </div>
-        </div>
         <p className={styles.headerSubtitle}>
           Welcome back! Here's an overview of your activities.
         </p>
@@ -161,7 +137,7 @@ const Dashboard = () => {
               icon={<Video size={20} className={styles.quickAccessIcon} />}
               title="Interviews"
               description="Manage your interview schedule"
-              path="/interviews"
+              path="/interview"
             />
             <QuickAccessCard
               icon={<Music size={20} className={styles.quickAccessIcon} />}

@@ -13,7 +13,7 @@ const SessionTracker = () => {
   const { updateMood } = useMood();
 
   // Make SESSION_TIMEOUT a constant outside the component
-  const SESSION_TIMEOUT = 30 * 1000;
+  const SESSION_TIMEOUT = 30 *60* 1000;
 
   // User activity detection
   useEffect(() => {

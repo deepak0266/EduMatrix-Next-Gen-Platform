@@ -1,64 +1,383 @@
-/* src/styles/Pages/StudyPage.module.css */
+/* StudyPage.module.css */
+
 .studyPageContainer {
-    display: flex;
-    height: calc(100vh - 64px); /* Adjust based on header height */
-    overflow: hidden;
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pageTitle {
+  text-align: center;
+  color: white;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, #fff, #e3f2fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.studySections {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.studySection {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.studySection:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader h2 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sectionHeader p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.sectionLink {
+  text-decoration: none;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.sectionLink:hover {
+  transform: scale(1.02);
+}
+
+.sectionCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.sectionCard:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sectionIconContainer {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.sectionCard:hover .sectionIconContainer {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sectionIcon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: all 0.3s ease;
+}
+
+.sectionCard:hover .sectionIcon {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.sectionContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionContent h3 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sectionContent p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sectionButton {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  align-self: flex-start;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.sectionButton:hover {
+  background: linear-gradient(135deg, #45a049, #4CAF50);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.sectionButton:active {
+  transform: translateY(0);
+}
+
+.toolsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.toolDisplay {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toolDisplay.toolVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toolPlaceholder {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.toolPlaceholder h3 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.toolPlaceholder p {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .studyPageContainer {
+    padding: 1.5rem;
   }
   
-  .sidebar {
-    width: 300px;
-    background-color: #f9fafb;
-    border-right: 1px solid #e5e7eb;
-    display: flex;
+  .pageTitle {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sectionCard {
     flex-direction: column;
-    overflow: hidden;
+    text-align: center;
+    gap: 1.5rem;
   }
   
-  .uploadSection {
+  .sectionIconContainer {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .sectionIcon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .studyPageContainer {
     padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
   }
   
-  .documentListSection {
-    flex: 1;
-    overflow-y: auto;
+  .pageTitle {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .studySection {
+    padding: 1.5rem;
+  }
+  
+  .sectionHeader h2 {
+    font-size: 1.5rem;
+  }
+  
+  .sectionHeader p {
+    font-size: 1rem;
+  }
+  
+  .sectionCard {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .sectionIconContainer {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .sectionIcon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .sectionContent h3 {
+    font-size: 1.25rem;
+  }
+  
+  .sectionContent p {
+    font-size: 0.9rem;
+  }
+  
+  .toolDisplay {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .studyPageContainer {
     padding: 0.5rem;
   }
   
-  .mainContent {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  .pageTitle {
+    font-size: 1.75rem;
   }
   
-  .documentViewerSection {
-    flex: 3;
-    overflow: hidden;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .summarySection {
-    flex: 1;
-    min-height: 200px;
-    overflow-y: auto;
-    background-color: #f9fafb;
+  .studySection {
     padding: 1rem;
   }
   
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .studyPageContainer {
-      flex-direction: column;
-    }
-    
-    .sidebar {
-      width: 100%;
-      height: auto;
-      max-height: 40vh;
-    }
-    
-    .mainContent {
-      height: 60vh;
-    }
+  .sectionCard {
+    padding: 1rem;
   }
+  
+  .sectionIconContainer {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .sectionIcon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .toolDisplay {
+    padding: 1rem;
+  }
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.studySection {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.studySection:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.studySection:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.studySection:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Hover Effects */
+.sectionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.sectionCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.sectionCard:hover::before {
+  opacity: 1;
+}
+
+/* Focus states for accessibility */
+.sectionLink:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 4px;
+  border-radius: 20px;
+}
+
+.sectionButton:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}

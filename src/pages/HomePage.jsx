@@ -101,11 +101,7 @@ const HomePage = () => {
           <p className={styles.ctaDescription}>
             Join thousands of students who are achieving their academic goals with EduMatrix.
           </p>
-          <div className={styles.ctaButton}>
-            <Link to="/signup">
-              <Button variant="primary" size="large">Get Started for Free</Button>
-            </Link>
-          </div>
+          
         </div>
       </section>
     </div>

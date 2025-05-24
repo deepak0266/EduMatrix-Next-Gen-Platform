@@ -19,7 +19,7 @@ const ProfilePage = () => {
     name: 'John Doe',
     email: 'john.doe@example.com',
     bio: 'Passionate learner and tech enthusiast',
-    avatar: '/api/placeholder/200/200',
+    avatar: '/assets/images/user.jpeg',
     joinDate: 'March 2024',
     stats: {
       completedCourses: 12,

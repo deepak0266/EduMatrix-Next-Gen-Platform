@@ -197,7 +197,7 @@ const InterviewPreparation = () => {
           model: "gpt-4o-mini",
           messages: [{
             role: "user",
-            content: `You are an AI interview coach. Generate most common interview questions for a ${type} (e.g., software developer, data scientist, c++, java).  
+            content: `You are an AI interview coach. Generate only most common interview questions for a ${type}.  
             Questions should be:  
             - Clear and concise
             - Brief 
@@ -207,7 +207,7 @@ const InterviewPreparation = () => {
             Example Output:  
             "if c++, in program you declare variable float main. Due to main, does it give error? if not then why if yes then why."
             
-            Remember generate only most common interview questions for/ related to ${type}.`
+            Remember generate only most common interview questions for related to ${type}.`
           }],
           temperature: 0.7,
           max_tokens: 150

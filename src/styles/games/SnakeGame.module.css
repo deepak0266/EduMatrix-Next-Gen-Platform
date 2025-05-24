@@ -1,0 +1,57 @@
+/* Add these styles to your existing GamesPage.module.css */
+
+.gameInterfaceContainer {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .gameInterfaceInner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-height: 400px;
+  }
+  
+  .backButton {
+    background: none;
+    border: none;
+    color: #4a6bdf;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .backButton:hover {
+    background-color: #f0f2f5;
+  }
+  
+  .gameTitle {
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  .gameDescription {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+  }
+  
+  /* Add these if you want to style the game cards differently for the Snake game */
+  .gameCardContainer[data-game="Snake Game"] {
+    border-left: 4px solid #4caf50;
+  }
+  
+  .gameCardContainer[data-game="Snake Game"] .gameCategory {
+    background-color: #4caf50;
+  }

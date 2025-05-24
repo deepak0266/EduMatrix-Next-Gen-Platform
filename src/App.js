@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { MoodProvider } from './contexts/MoodContext';
@@ -30,28 +29,65 @@ function App() {
         <MoodProvider>
           <DocumentProvider>
             <ChatbotProvider>
-              <MusicMoodProvider> {/* Add the MusicMoodProvider */}
+              <MusicMoodProvider>
                 <div className="app">
                   <Header />
-                  {/* SessionTracker needs to be inside the Auth and Mood provider context */}
                   <SessionTracker />
                   <main>
-                    <Chatbot />
                     <Routes>
+                      {/* Public routes without chatbot */}
                       <Route path="/" element={<HomePage />} />
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/signup" element={<SignupPage />} />
 
-                      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-                      <Route path="/study" element={<ProtectedRoute><StudyPage /></ProtectedRoute>} />
-                      <Route path="/music" element={<ProtectedRoute><MusicPage /></ProtectedRoute>} />
-                      <Route path="/games" element={<ProtectedRoute><GamesPage /></ProtectedRoute>} />
-                      <Route path="/chatbot" element={<ProtectedRoute><div className="chatbot-page"><Chatbot fullPage={true} /></div></ProtectedRoute>} />
-                      <Route path="/documents" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
-                      <Route path="/documents/view/:documentId" element={<ProtectedRoute><DocumentViewer /></ProtectedRoute>} />
-                      <Route path="/interview" element={<ProtectedRoute><InterviewPage /></ProtectedRoute>} />
-                      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                      {/* Protected routes with chatbot */}
+                      <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                          <DashboardPage />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+                      <Route path="/study" element={
+                        <ProtectedRoute>
+                          <StudyPage />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+                      <Route path="/music" element={
+                        <ProtectedRoute>
+                          <MusicPage />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+                      <Route path="/games" element={
+                        <ProtectedRoute>
+                          <GamesPage />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+                      <Route path="/documents" element={
+                        <ProtectedRoute>
+                          <DocumentsPage />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+                      <Route path="/documents/view/:documentId" element={
+                        <ProtectedRoute>
+                          <DocumentViewer />
+                          <Chatbot />
+                        </ProtectedRoute>
+                      }/>
+
+                      {/* Other protected routes without chatbot */}
+                      <Route path="/interview" element={
+                        <ProtectedRoute><InterviewPage /></ProtectedRoute>
+                      }/>
+                      <Route path="/profile" element={
+                        <ProtectedRoute><ProfilePage /></ProtectedRoute>
+                      }/>
+                      <Route path="/settings" element={
+                        <ProtectedRoute><SettingsPage /></ProtectedRoute>
+                      }/>
                     </Routes>
                   </main>
                 </div>

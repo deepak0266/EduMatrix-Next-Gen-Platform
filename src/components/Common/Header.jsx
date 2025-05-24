@@ -92,7 +92,7 @@ const Header = () => {
             <div className={styles.userProfile}>
               <button className={styles.profileButton} onClick={toggleDropdown}>
                 <img 
-                  src={currentUser.photoURL || '/assets/icons/user-default.svg'} 
+                  src={currentUser.photoURL || '/assets/images/user.jpeg'} 
                   alt="Profile" 
                   className={styles.profileImage} 
                 />
