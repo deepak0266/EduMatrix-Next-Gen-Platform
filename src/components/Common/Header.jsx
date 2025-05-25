@@ -89,7 +89,7 @@ const Header = () => {
         
         <div className={styles.headerActions}>
           {currentUser ? (
-            <div className={styles.userProfile}>
+            <div className={styles.userProfile}> 
               <button className={styles.profileButton} onClick={toggleDropdown}>
                 <img 
                   src={currentUser.photoURL || '/assets/images/user.jpeg'} 

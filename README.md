@@ -97,3 +97,5 @@ A dedicated section within the Study Interface offering **12+ free tools** to si
 - **Study Session Analyser**: Integrate advanced analytics to track study habits and provide actionable insights.  
 - **Gamification**: Add more games and rewards to make learning fun and engaging.  
 - **Collaborative Features**: Allow users to share documents and summaries with peers.  
+"# EduMatrix" 
+"# EduMatrix" 
